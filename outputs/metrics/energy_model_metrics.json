@@ -1,0 +1,42 @@
+{
+  "model_type": "StandardScaler + MLPRegressor",
+  "feature_columns": [
+    "distance_km",
+    "avg_slope",
+    "congestion_index",
+    "avg_speed",
+    "passenger_load",
+    "temperature",
+    "peak_hour"
+  ],
+  "target_column": "energy_kwh",
+  "sample_count": 77120,
+  "train_sample_count": 61696,
+  "test_sample_count": 15424,
+  "random_seed": 42,
+  "test_size": 0.2,
+  "train_loss": 0.1456066165508375,
+  "train_mae": 0.41048079500032486,
+  "train_rmse": 0.524227433863496,
+  "train_r2": 0.9992181520580886,
+  "test_mae": 0.4183697153615286,
+  "test_rmse": 0.5355269303537981,
+  "test_r2": 0.9991907994323576,
+  "runtime_seconds": 1.7593364159110934,
+  "input_path": "data/processed/energy_samples.csv",
+  "model_output_path": "outputs/models/energy_model.pkl",
+  "metrics_output_path": "outputs/metrics/energy_model_metrics.json",
+  "predictions_output_path": "data/processed/energy_predictions.csv",
+  "config": {
+    "random_seed": 42,
+    "test_size": 0.2,
+    "hidden_layer_sizes": [
+      64,
+      32
+    ],
+    "max_iter": 300,
+    "learning_rate_init": 0.001,
+    "early_stopping": true,
+    "validation_fraction": 0.1
+  }
+}
