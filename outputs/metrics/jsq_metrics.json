@@ -1,0 +1,35 @@
+{
+  "algorithm": "JSQ",
+  "scenario_name": "default",
+  "description": "Join the Shortest Queue baseline with FCFS charger queues",
+  "scenario_description": "Legacy 20-bus full-GTFS stress scenario",
+  "trip_count": 77120,
+  "completed_trip_count": 2853,
+  "unserved_trip_count": 74267,
+  "completion_rate": 0.03699429460580913,
+  "vehicle_count": 20,
+  "charging_event_count": 82,
+  "total_predicted_energy_kwh": 16300.668010620937,
+  "total_charged_energy_kwh": 15437.818634046349,
+  "total_charging_cost": 15767.194556766903,
+  "average_wait_time_min": 2.264504376451548,
+  "max_wait_time_min": 39.52344925485562,
+  "average_charge_duration_min": 94.13304045150213,
+  "min_final_soc": 0.3101123664828057,
+  "max_final_soc": 0.9,
+  "runtime_seconds": 1.752778708934784,
+  "input_paths": {
+    "trips": "data/processed/trips_hk_gtfs_full.csv",
+    "vehicles": "data/processed/vehicles.csv",
+    "stations": "data/processed/stations.csv",
+    "prices": "data/processed/prices.csv",
+    "energy_predictions": "data/processed/energy_predictions.csv"
+  },
+  "schedule_output_path": "outputs/schedules/jsq_schedule.csv",
+  "metrics_output_path": "outputs/metrics/jsq_metrics.json",
+  "config": {
+    "charge_trigger_soc": 0.3,
+    "target_soc": 0.9,
+    "charger_travel_time_min": 0.0
+  }
+}
