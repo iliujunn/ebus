@@ -151,6 +151,9 @@ def normalize_trips(gtfs_dir: Path, output_path: Path, max_routes: int, max_trip
                         float(last_stop["stop_lon"]),
                     )
                     distance_km = f"{km:.2f}"
+            if not distance_km or float(distance_km) <= 0:
+                duration_hours = max(1 / 60, (end_time - start_time) / 3600)
+                distance_km = f"{max(0.5, duration_hours * 12):.2f}"
 
             writer.writerow(
                 {
@@ -178,14 +181,18 @@ def main() -> None:
     parser.add_argument("--output", default="data/processed/trips_hk_gtfs.csv")
     parser.add_argument("--max-routes", type=int, default=3)
     parser.add_argument("--max-trips", type=int, default=1000)
+    parser.add_argument("--refresh", action="store_true", help="Download GTFS even when a local zip already exists.")
     args = parser.parse_args()
 
     raw_dir = Path(args.raw_dir)
     zip_path = raw_dir / "gtfs.zip"
     extract_dir = raw_dir / "extracted"
 
-    print(f"Downloading {args.url}")
-    download(args.url, zip_path)
+    if args.refresh or not zip_path.exists():
+        print(f"Downloading {args.url}")
+        download(args.url, zip_path)
+    else:
+        print(f"Using existing {zip_path}")
 
     if extract_dir.exists():
         shutil.rmtree(extract_dir)
