@@ -62,6 +62,25 @@ def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     return 2 * radius_km * math.asin(math.sqrt(a))
 
 
+def stop_row_distance_km(rows: list[dict[str, str]], stops: dict[str, dict[str, str]]) -> float:
+    total = 0.0
+    last_stop: dict[str, str] | None = None
+    for row in rows:
+        stop = stops.get(row["stop_id"], {})
+        if not all(stop.get(k) for k in ("stop_lat", "stop_lon")):
+            last_stop = None
+            continue
+        if last_stop:
+            total += haversine_km(
+                float(last_stop["stop_lat"]),
+                float(last_stop["stop_lon"]),
+                float(stop["stop_lat"]),
+                float(stop["stop_lon"]),
+            )
+        last_stop = stop
+    return total
+
+
 def normalize_trips(gtfs_dir: Path, output_path: Path, max_routes: int, max_trips: int) -> int:
     routes = read_csv(gtfs_dir / "routes.txt")
     trips = read_csv(gtfs_dir / "trips.txt")
@@ -115,7 +134,11 @@ def normalize_trips(gtfs_dir: Path, output_path: Path, max_routes: int, max_trip
             distance_km = ""
             if first.get("shape_dist_traveled") and last.get("shape_dist_traveled"):
                 distance_km = f"{(float(last['shape_dist_traveled']) - float(first['shape_dist_traveled'])) / 1000:.2f}"
-            else:
+            if not distance_km or float(distance_km) <= 0:
+                path_km = stop_row_distance_km(rows, stops)
+                if path_km > 0:
+                    distance_km = f"{path_km:.2f}"
+            if not distance_km or float(distance_km) <= 0:
                 first_stop = stops.get(first["stop_id"], {})
                 last_stop = stops.get(last["stop_id"], {})
                 if all(first_stop.get(k) for k in ("stop_lat", "stop_lon")) and all(

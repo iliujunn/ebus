@@ -73,7 +73,7 @@ def build_vehicles(trips: list[dict[str, str]], output: Path, bus_count: int = 2
             {
                 "bus_id": f"BUS{i + 1:03d}",
                 "battery_capacity": 300,
-                "initial_soc": round(rnd.uniform(0.72, 0.95), 3),
+                "initial_soc": round(rnd.uniform(0.72, 0.88), 3),
                 "max_soc": 0.9,
                 "min_soc": 0.2,
                 "assigned_route": route,

@@ -1,0 +1,15 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang
+XB,落马洲过境巴士服务,https://www.td.gov.hk/sc/transport_in_hong_kong/land_based_cross_boundary_transport/access_to_lok_ma_chau_control_point,Asia/Hong_Kong,zh-CN
+PI,马湾居民巴士服务,https://www.hkemobility.gov.hk/sc/public-transport/bus/PI,Asia/Hong_Kong,zh-CN
+DB,愉景湾居民巴士服务,https://www.hkemobility.gov.hk/sc/public-transport/bus/DB,Asia/Hong_Kong,zh-CN
+LWB,龙运巴士,http://www.lwb.hk,Asia/Hong_Kong,zh-CN
+KMB,九龙巴士,https://www.kmb.hk,Asia/Hong_Kong,zh-CN
+KMB+CTB,九龙巴士|城巴,https://www.kmb.hk|https://www.citybus.com.hk,Asia/Hong_Kong,zh-CN
+LWB+CTB,龙运巴士|城巴,http://www.lwb.hk|https://www.citybus.com.hk,Asia/Hong_Kong,zh-CN
+CTB,城巴,https://www.citybus.com.hk,Asia/Hong_Kong,zh-CN
+LRTFeeder,港铁巴士,https://www.mtr.com.hk,Asia/Hong_Kong,zh-CN
+NLB,新大屿山巴士,https://www.nlb.com.hk,Asia/Hong_Kong,zh-CN
+GMB,绿色专线小巴服务,https://www.td.gov.hk/sc/transport_in_hong_kong/public_transport/minibuses,Asia/Hong_Kong,zh-CN
+FERRY,渡轮服务,https://www.td.gov.hk/sc/transport_in_hong_kong/public_transport/ferries,Asia/Hong_Kong,zh-CN
+PTRAM,山顶缆车,https://www.thepeak.com.hk/zh-hans/the-peak-experience/the-peak-tram-upgrade-project,Asia/Hong_Kong,zh-CN
+TRAM,香港电车,https://www.hktramways.com,Asia/Hong_Kong,zh-CN
