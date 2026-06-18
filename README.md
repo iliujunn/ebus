@@ -46,6 +46,8 @@ make run        # 运行完整实验流程
 
 当前仓库已经包含任务规划要求的数据表。公交班次来自香港 DATA.GOV.HK GTFS，天气来自香港天文台 API；车辆、公交可用充电站、能耗标签和路径候选是在真实班次基础上按项目假设构造，具体来源见 `docs/真实数据采集说明.md`。
 
+能耗训练样本中的 `energy_kwh` 是模型训练使用的带噪声标签。生成流程先计算规则化的 `energy_kwh_clean`，再叠加基础高斯噪声、场景噪声和少量异常扰动；场景噪声会在高峰、拥堵、高载客、温度偏离舒适区、低速等条件下增大。这样可以避免模型只拟合过于干净的公式标签，使能耗预测任务更接近真实运营数据的不确定性。噪声生成按 `trip_id` 固定随机种子，可重复生成。
+
 | 文件 | 内容 | 规模 |
 |---|---|---:|
 | `data/raw/hk_gtfs/gtfs.zip` | 原始 GTFS 压缩包 | 约 13 MB |
@@ -57,7 +59,7 @@ make run        # 运行完整实验流程
 | `data/processed/stations.csv` | 充电站候选点、桩数和功率 | 6 个站点 |
 | `data/processed/prices.csv` | 分时电价 | 3 个时段 |
 | `data/processed/weather_hourly.csv` | 小时级温度和湿度 | 24 小时 |
-| `data/processed/energy_samples.csv` | 能耗预测训练样本 | 77,120 条样本 |
+| `data/processed/energy_samples.csv` | 能耗预测训练样本，含干净能耗、带噪声能耗和噪声解释字段 | 77,120 条样本 |
 | `data/processed/path_candidates.csv` | 绿色路径规划候选路径 | 231,360 条路径 |
 
 重新生成完整数据：

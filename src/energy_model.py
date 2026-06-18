@@ -39,6 +39,7 @@ FEATURE_COLUMNS = [
 ]
 TARGET_COLUMN = "energy_kwh"
 IDENTIFIER_COLUMNS = ["trip_id", "route_id", "start_time", "end_time"]
+OPTIONAL_LABEL_COLUMNS = ["energy_kwh_clean", "noise_kwh", "noise_ratio", "noise_profile"]
 
 
 logging.basicConfig(
@@ -195,7 +196,9 @@ def save_metrics(metrics: dict[str, Any]) -> None:
 def save_predictions(data: pd.DataFrame, model: Pipeline) -> pd.DataFrame:
     """Save one row per trip with actual and predicted energy consumption."""
 
-    prediction_data = data[IDENTIFIER_COLUMNS + FEATURE_COLUMNS + [TARGET_COLUMN]].copy()
+    optional_columns = [column for column in OPTIONAL_LABEL_COLUMNS if column in data.columns]
+    prediction_columns = IDENTIFIER_COLUMNS + FEATURE_COLUMNS + optional_columns + [TARGET_COLUMN]
+    prediction_data = data[prediction_columns].copy()
     prediction_data["predicted_energy_kwh"] = model.predict(data[FEATURE_COLUMNS])
     prediction_data["prediction_error_kwh"] = (
         prediction_data["predicted_energy_kwh"] - prediction_data[TARGET_COLUMN]

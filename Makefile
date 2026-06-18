@@ -22,7 +22,7 @@ help:
 	@echo "  make data         生成完整真实基础数据和派生实验数据"
 	@echo "  make data-small   生成 3 条线路的小样本班次数据"
 	@echo "  make data-full    生成全量公交班次数据"
-	@echo "  make data-derived 生成车辆、充电站、电价、天气、能耗和路径数据"
+	@echo "  make data-derived 生成车辆、充电站、电价、天气、带噪声能耗和路径数据"
 	@echo "  make data-validate 校验处理后数据表兼容性"
 	@echo "  make simulate     生成模拟数据"
 	@echo "  make train        训练能耗预测模型"

@@ -24,6 +24,10 @@ GTFS_DIR = RAW_DIR / "hk_gtfs"
 WEATHER_RAW = RAW_DIR / "hko_current_weather.json"
 PROCESSED_DIR = Path("data/processed")
 
+BASE_ENERGY_NOISE_RATIO = 0.08
+BASE_ENERGY_NOISE_KWH = 1.5
+OUTLIER_PROBABILITY = 0.03
+
 
 def stable_random(*parts: str) -> random.Random:
     seed = hashlib.sha256("|".join(parts).encode("utf-8")).hexdigest()
@@ -229,14 +233,22 @@ def trip_features(row: dict[str, str], hourly_temp: dict[int, float]) -> dict[st
     positive_slope = max(0.0, avg_slope)
     temperature = hourly_temp.get(start_hour, 25.0)
     temperature_penalty = max(0.0, abs(temperature - 22.0) - 3.0) * 0.08 * distance
-    noise = rnd.gauss(0, 0.45)
-    energy = (
+    clean_energy = (
         1.1 * distance
         + 0.25 * positive_slope * 100 * distance
         + 0.4 * congestion * distance
         + 0.2 * passenger_load * distance
         + temperature_penalty
-        + noise
+    )
+    clean_energy = max(0.8, clean_energy)
+    noisy_energy, noise_kwh, noise_ratio, noise_profile = apply_energy_noise(
+        clean_energy,
+        congestion,
+        passenger_load,
+        temperature,
+        peak_hour,
+        avg_speed,
+        rnd,
     )
     return {
         "trip_id": row["trip_id"],
@@ -250,9 +262,60 @@ def trip_features(row: dict[str, str], hourly_temp: dict[int, float]) -> dict[st
         "passenger_load": round(passenger_load, 3),
         "temperature": round(temperature, 1),
         "peak_hour": peak_hour,
-        "energy_kwh": round(max(0.8, energy), 2),
-        "source": "GTFS distance/timing + HKO temperature + literature-style calibrated simulation",
+        "energy_kwh_clean": round(clean_energy, 2),
+        "energy_kwh": round(noisy_energy, 2),
+        "noise_kwh": round(noise_kwh, 2),
+        "noise_ratio": round(noise_ratio, 4),
+        "noise_profile": noise_profile,
+        "source": "GTFS distance/timing + HKO temperature + calibrated simulation with Gaussian and scenario noise",
     }
+
+
+def apply_energy_noise(
+    clean_energy_kwh: float,
+    congestion: float,
+    passenger_load: float,
+    temperature: float,
+    peak_hour: int,
+    avg_speed: float,
+    rnd: random.Random,
+) -> tuple[float, float, float, str]:
+    """Apply reproducible Gaussian and scenario-dependent noise to energy labels."""
+
+    scenario_ratio = BASE_ENERGY_NOISE_RATIO
+    profile_parts = ["gaussian"]
+    if peak_hour:
+        scenario_ratio += 0.05
+        profile_parts.append("peak_hour")
+    if congestion >= 0.65:
+        scenario_ratio += 0.06
+        profile_parts.append("high_congestion")
+    if passenger_load >= 0.75:
+        scenario_ratio += 0.03
+        profile_parts.append("high_load")
+    if abs(temperature - 22.0) >= 4.0:
+        scenario_ratio += 0.04
+        profile_parts.append("temperature_stress")
+    if avg_speed <= 12.0:
+        scenario_ratio += 0.03
+        profile_parts.append("low_speed")
+
+    additive_noise = rnd.gauss(0.0, BASE_ENERGY_NOISE_KWH)
+    proportional_noise = clean_energy_kwh * rnd.gauss(0.0, scenario_ratio)
+    outlier_noise = 0.0
+    if rnd.random() < OUTLIER_PROBABILITY:
+        outlier_noise = clean_energy_kwh * rnd.gauss(0.0, 0.35)
+        profile_parts.append("rare_outlier")
+
+    noise_kwh = additive_noise + proportional_noise + outlier_noise
+    noisy_energy = max(0.8, clean_energy_kwh + noise_kwh)
+    actual_noise_kwh = noisy_energy - clean_energy_kwh
+    return (
+        noisy_energy,
+        actual_noise_kwh,
+        actual_noise_kwh / max(clean_energy_kwh, 1e-9),
+        "+".join(profile_parts),
+    )
 
 
 def build_energy_samples(trips: list[dict[str, str]], hourly_temp: dict[int, float], output: Path) -> None:
@@ -271,7 +334,11 @@ def build_energy_samples(trips: list[dict[str, str]], hourly_temp: dict[int, flo
             "passenger_load",
             "temperature",
             "peak_hour",
+            "energy_kwh_clean",
             "energy_kwh",
+            "noise_kwh",
+            "noise_ratio",
+            "noise_profile",
             "source",
         ],
         rows,
@@ -314,7 +381,11 @@ def build_path_candidates(trips: list[dict[str, str]], hourly_temp: dict[int, fl
             "passenger_load",
             "temperature",
             "peak_hour",
+            "energy_kwh_clean",
             "energy_kwh",
+            "noise_kwh",
+            "noise_ratio",
+            "noise_profile",
             "carbon_kgco2",
             "source",
         ],
