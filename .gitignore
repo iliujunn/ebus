@@ -20,6 +20,8 @@ env/
 data/raw/
 data/simulated/
 data/processed/*_full.csv
+data/processed/energy_samples.csv
+data/processed/path_candidates.csv
 
 # Experiment outputs
 outputs/
@@ -32,4 +34,3 @@ outputs/
 
 # Logs
 *.log
-

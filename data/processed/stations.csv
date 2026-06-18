@@ -1,0 +1,7 @@
+station_id,station_name,location,stop_id,lat,lon,fast_chargers,slow_chargers,fast_power,slow_power,source
+CS01,[KMB] 天恒邨总站 Charging Hub,[KMB] 天恒邨总站,9888,22.46910,113.99924,4,6,120,40,Derived from high-frequency GTFS bus termini; charger counts are project assumptions
+CS02,[CTB] 会展站 Charging Hub,[CTB] 会展站,10000110,22.28161,114.17548,2,4,120,40,Derived from high-frequency GTFS bus termini; charger counts are project assumptions
+CS03,[XB] 皇岗 Charging Hub,[XB] 皇岗,12743,22.52240,114.06865,2,4,120,40,Derived from high-frequency GTFS bus termini; charger counts are project assumptions
+CS04,[CTB] 屯门码头 Charging Hub,[CTB] 屯门码头,1242,22.37254,113.96673,1,2,120,40,Derived from high-frequency GTFS bus termini; charger counts are project assumptions
+CS05,港铁大学站巴士总站 Charging Hub,港铁大学站巴士总站,20002275,22.41272,114.21079,1,2,120,40,Derived from high-frequency GTFS bus termini; charger counts are project assumptions
+CS06,[CTB] 小西湾 (蓝湾半岛) Charging Hub,[CTB] 小西湾 (蓝湾半岛),1546,22.26610,114.25096,1,2,120,40,Derived from high-frequency GTFS bus termini; charger counts are project assumptions

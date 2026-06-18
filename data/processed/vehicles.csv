@@ -1,0 +1,21 @@
+bus_id,battery_capacity,initial_soc,max_soc,min_soc,assigned_route,source
+BUS001,300,0.897,0.9,0.2,1862,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS002,300,0.883,0.9,0.2,1884,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS003,300,0.881,0.9,0.2,1879,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS004,300,0.889,0.9,0.2,2008629,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS005,300,0.79,0.9,0.2,2000511,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS006,300,0.807,0.9,0.2,2003801,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS007,300,0.892,0.9,0.2,2004825,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS008,300,0.872,0.9,0.2,1991,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS009,300,0.756,0.9,0.2,1862,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS010,300,0.855,0.9,0.2,1884,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS011,300,0.829,0.9,0.2,1879,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS012,300,0.877,0.9,0.2,2008629,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS013,300,0.896,0.9,0.2,2000511,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS014,300,0.902,0.9,0.2,2003801,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS015,300,0.888,0.9,0.2,2004825,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS016,300,0.795,0.9,0.2,1991,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS017,300,0.852,0.9,0.2,1862,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS018,300,0.754,0.9,0.2,1884,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS019,300,0.793,0.9,0.2,1879,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS
+BUS020,300,0.72,0.9,0.2,2008629,Constructed from project assumptions; route assignment from DATA.GOV.HK GTFS

@@ -1,0 +1,4 @@
+start_time,end_time,period_type,price_per_kwh,currency,source
+00:00,16:00,off_peak,0.913,HKD,CLP EV Residential ToU Tariff: off-peak 23:00-16:00 at 91.3 cents/unit
+16:00,23:00,on_peak,1.343,HKD,CLP EV Residential ToU Tariff: on-peak 16:00-23:00 at 134.3 cents/unit
+23:00,24:00,off_peak,0.913,HKD,CLP EV Residential ToU Tariff: off-peak 23:00-16:00 at 91.3 cents/unit
