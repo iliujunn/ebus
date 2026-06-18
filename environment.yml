@@ -1,0 +1,24 @@
+name: ebus-dispatch
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - "numpy>=1.26,<2.0"
+  - "pandas>=2.2,<3.0"
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - pytorch
+  - networkx
+  - tqdm
+  - joblib
+  - pyyaml
+  - pytest
+  - black
+  - isort
+  - ruff
+  - pip:
+      - deap
