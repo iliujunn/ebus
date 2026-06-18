@@ -6,7 +6,7 @@ CONDA ?= conda
 RUN := $(CONDA) run --no-capture-output -n $(CONDA_ENV)
 PYTHON := $(RUN) python
 
-.PHONY: help env env-update env-remove activate setup dirs data simulate train jsq ga evaluate figures run test format lint clean
+.PHONY: help env env-update env-remove activate setup dirs data data-small data-full data-derived data-validate simulate train jsq ga evaluate figures run test format lint clean
 
 help:
 	@echo "新能源公交车队智能充电调度项目统一命令"
@@ -19,7 +19,11 @@ help:
 	@echo "  make setup        创建输出目录"
 	@echo ""
 	@echo "数据与实验:"
-	@echo "  make data         采集/处理 GTFS 数据"
+	@echo "  make data         生成完整真实基础数据和派生实验数据"
+	@echo "  make data-small   生成 3 条线路的小样本班次数据"
+	@echo "  make data-full    生成全量公交班次数据"
+	@echo "  make data-derived 生成车辆、充电站、电价、天气、能耗和路径数据"
+	@echo "  make data-validate 校验处理后数据表兼容性"
 	@echo "  make simulate     生成模拟数据"
 	@echo "  make train        训练能耗预测模型"
 	@echo "  make jsq          运行 JSQ 基线调度"
@@ -53,11 +57,34 @@ dirs:
 	@mkdir -p outputs/figures outputs/schedules outputs/metrics outputs/models
 	@mkdir -p docs tests src
 
-data:
+data: data-full data-small data-derived data-validate
+
+data-small:
 	@if [ -f scripts/collect_hk_gtfs.py ]; then \
 		$(PYTHON) scripts/collect_hk_gtfs.py; \
 	else \
 		echo "未找到 scripts/collect_hk_gtfs.py，跳过真实数据采集。"; \
+	fi
+
+data-full:
+	@if [ -f scripts/collect_hk_gtfs.py ]; then \
+		$(PYTHON) scripts/collect_hk_gtfs.py --max-routes 99999 --max-trips 999999 --output data/processed/trips_hk_gtfs_full.csv; \
+	else \
+		echo "未找到 scripts/collect_hk_gtfs.py，跳过全量 GTFS 数据处理。"; \
+	fi
+
+data-derived:
+	@if [ -f scripts/build_project_datasets.py ]; then \
+		$(PYTHON) scripts/build_project_datasets.py; \
+	else \
+		echo "未找到 scripts/build_project_datasets.py，跳过派生实验数据生成。"; \
+	fi
+
+data-validate:
+	@if [ -f scripts/validate_datasets.py ]; then \
+		$(PYTHON) scripts/validate_datasets.py; \
+	else \
+		echo "未找到 scripts/validate_datasets.py，跳过数据兼容性校验。"; \
 	fi
 
 simulate:
