@@ -7,6 +7,7 @@ import json
 import logging
 import argparse
 import hashlib
+import math
 import random
 import re
 import time
@@ -20,10 +21,19 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TRIPS_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "trips_hk_gtfs_full.csv"
 SMALL_TRIPS_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "trips_hk_gtfs.csv"
+CURRENT_TRIPS_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "trips_current.csv"
+PLANNED_TRIPS_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "trips_planned.csv"
+FULL_TRIPS_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "trips_full_coverage.csv"
 VEHICLES_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "vehicles.csv"
 HK_SCALE_VEHICLES_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "vehicles_hk_scale_5870.csv"
+CURRENT_VEHICLES_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "vehicles_current_150.csv"
+PLANNED_VEHICLES_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "vehicles_planned_750.csv"
+FULL_VEHICLES_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "vehicles_full_5870.csv"
 STATIONS_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "stations.csv"
 HK_SCALE_STATIONS_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "stations_hk_scale_80hubs.csv"
+CURRENT_STATIONS_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "stations_current.csv"
+PLANNED_STATIONS_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "stations_planned.csv"
+FULL_STATIONS_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "stations_full_80hubs.csv"
 PRICES_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "prices.csv"
 ENERGY_INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "energy_predictions.csv"
 SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "jsq_schedule.csv"
@@ -32,10 +42,50 @@ SMALL_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "jsq_sched
 SMALL_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "jsq_metrics_small_demo.json"
 HK_SCALE_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "jsq_schedule_hk_scale.csv"
 HK_SCALE_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "jsq_metrics_hk_scale.json"
+CURRENT_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "jsq_schedule_current.csv"
+CURRENT_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "jsq_metrics_current.json"
+PLANNED_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "jsq_schedule_planned.csv"
+PLANNED_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "jsq_metrics_planned.json"
+FULL_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "jsq_schedule_full.csv"
+FULL_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "jsq_metrics_full.json"
 
 MINUTES_PER_DAY = 24 * 60
 HK_SCALE_BUS_COUNT = 5870
 HK_SCALE_HUB_COUNT = 80
+GRID_EMISSION_FACTOR_KGCO2_PER_KWH = 0.55
+SUPPORTED_SCENARIOS = ["current", "planned", "full", "small_demo", "hk_scale", "default"]
+PENETRATION_SCENARIO_CONFIGS: dict[str, dict[str, Any]] = {
+    "current": {
+        "fleet_count": 150,
+        "trip_ratio": 150 / HK_SCALE_BUS_COUNT,
+        "station_count": 6,
+        "fast_chargers": 4,
+        "slow_chargers": 4,
+        "bus_prefix": "CURBUS",
+        "station_prefix": "CURCS",
+        "description": "Current pilot-stage e-bus penetration scenario",
+    },
+    "planned": {
+        "fleet_count": 750,
+        "trip_ratio": 750 / HK_SCALE_BUS_COUNT,
+        "station_count": 20,
+        "fast_chargers": 8,
+        "slow_chargers": 6,
+        "bus_prefix": "PLANBUS",
+        "station_prefix": "PLANCS",
+        "description": "Planned near-term e-bus expansion scenario",
+    },
+    "full": {
+        "fleet_count": HK_SCALE_BUS_COUNT,
+        "trip_ratio": 1.0,
+        "station_count": HK_SCALE_HUB_COUNT,
+        "fast_chargers": 12,
+        "slow_chargers": 8,
+        "bus_prefix": "FULLBUS",
+        "station_prefix": "FULLCS",
+        "description": "Full e-bus coverage scenario",
+    },
+}
 
 
 logging.basicConfig(
@@ -117,6 +167,42 @@ def format_minutes(value: float) -> str:
 def build_scheduler_paths(scenario_name: str) -> SchedulerPaths:
     """Resolve file paths for a supported JSQ experiment scenario."""
 
+    if scenario_name == "current":
+        return SchedulerPaths(
+            scenario_name=scenario_name,
+            trips_input_path=CURRENT_TRIPS_INPUT_PATH,
+            vehicles_input_path=CURRENT_VEHICLES_INPUT_PATH,
+            stations_input_path=CURRENT_STATIONS_INPUT_PATH,
+            prices_input_path=PRICES_INPUT_PATH,
+            energy_input_path=ENERGY_INPUT_PATH,
+            schedule_output_path=CURRENT_SCHEDULE_OUTPUT_PATH,
+            metrics_output_path=CURRENT_METRICS_OUTPUT_PATH,
+            description=PENETRATION_SCENARIO_CONFIGS[scenario_name]["description"],
+        )
+    if scenario_name == "planned":
+        return SchedulerPaths(
+            scenario_name=scenario_name,
+            trips_input_path=PLANNED_TRIPS_INPUT_PATH,
+            vehicles_input_path=PLANNED_VEHICLES_INPUT_PATH,
+            stations_input_path=PLANNED_STATIONS_INPUT_PATH,
+            prices_input_path=PRICES_INPUT_PATH,
+            energy_input_path=ENERGY_INPUT_PATH,
+            schedule_output_path=PLANNED_SCHEDULE_OUTPUT_PATH,
+            metrics_output_path=PLANNED_METRICS_OUTPUT_PATH,
+            description=PENETRATION_SCENARIO_CONFIGS[scenario_name]["description"],
+        )
+    if scenario_name == "full":
+        return SchedulerPaths(
+            scenario_name=scenario_name,
+            trips_input_path=FULL_TRIPS_INPUT_PATH,
+            vehicles_input_path=FULL_VEHICLES_INPUT_PATH,
+            stations_input_path=FULL_STATIONS_INPUT_PATH,
+            prices_input_path=PRICES_INPUT_PATH,
+            energy_input_path=ENERGY_INPUT_PATH,
+            schedule_output_path=FULL_SCHEDULE_OUTPUT_PATH,
+            metrics_output_path=FULL_METRICS_OUTPUT_PATH,
+            description=PENETRATION_SCENARIO_CONFIGS[scenario_name]["description"],
+        )
     if scenario_name == "small_demo":
         return SchedulerPaths(
             scenario_name=scenario_name,
@@ -159,9 +245,173 @@ def build_scheduler_paths(scenario_name: str) -> SchedulerPaths:
 def ensure_scenario_inputs(paths: SchedulerPaths) -> None:
     """Create deterministic synthetic scale inputs required by a scenario."""
 
+    if paths.scenario_name in PENETRATION_SCENARIO_CONFIGS:
+        ensure_penetration_scenario_inputs(paths)
     if paths.scenario_name == "hk_scale":
         ensure_hk_scale_vehicles(paths.vehicles_input_path)
         ensure_hk_scale_stations(paths.stations_input_path)
+
+
+def select_route_cluster_trips(trips: pd.DataFrame, target_ratio: float) -> pd.DataFrame:
+    """Select a nested high-frequency route cluster by trip share."""
+
+    if target_ratio >= 1.0:
+        return trips.copy()
+
+    target_count = max(1, math.ceil(len(trips) * target_ratio))
+    route_counts = trips["route_id"].astype(str).value_counts()
+    selected_routes: set[str] = set()
+    selected_count = 0
+    for route_id, count in route_counts.sort_values(ascending=False).items():
+        if selected_routes and abs(target_count - selected_count) <= abs(target_count - (selected_count + int(count))):
+            break
+        selected_routes.add(str(route_id))
+        selected_count += int(count)
+        if selected_count == target_count:
+            break
+    return trips[trips["route_id"].astype(str).isin(selected_routes)].copy()
+
+
+def ensure_penetration_scenario_inputs(paths: SchedulerPaths) -> None:
+    """Generate current/planned/full scenario files when absent."""
+
+    config = PENETRATION_SCENARIO_CONFIGS[paths.scenario_name]
+    ensure_penetration_trips(paths.trips_input_path, float(config["trip_ratio"]))
+    ensure_penetration_vehicles(
+        paths.vehicles_input_path,
+        paths.trips_input_path,
+        int(config["fleet_count"]),
+        str(config["bus_prefix"]),
+        str(config["description"]),
+    )
+    ensure_penetration_stations(
+        paths.stations_input_path,
+        int(config["station_count"]),
+        str(config["station_prefix"]),
+        str(config["description"]),
+        int(config["fast_chargers"]),
+        int(config["slow_chargers"]),
+    )
+
+
+def ensure_penetration_trips(output_path: Path, target_ratio: float) -> None:
+    """Generate a route-cluster trip subset for one penetration scenario."""
+
+    if output_path.exists():
+        return
+    if not TRIPS_INPUT_PATH.exists():
+        raise FileNotFoundError(f"Cannot build scenario trips before full trips exist: {TRIPS_INPUT_PATH}")
+
+    trips = pd.read_csv(TRIPS_INPUT_PATH, dtype={"trip_id": str, "route_id": str})
+    selected = select_route_cluster_trips(trips, target_ratio)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    selected.to_csv(output_path, index=False)
+    logger.info("Generated penetration scenario trips at %s", output_path)
+
+
+def ensure_penetration_vehicles(
+    output_path: Path,
+    trips_path: Path,
+    bus_count: int,
+    bus_prefix: str,
+    scenario_description: str,
+) -> None:
+    """Generate a deterministic synthetic fleet for one penetration scenario."""
+
+    if output_path.exists():
+        return
+    trips = pd.read_csv(trips_path, dtype={"route_id": str})
+    route_counts = trips["route_id"].value_counts()
+    routes = route_counts.index.tolist()
+    vehicle_counts = apportion_vehicles_to_routes(route_counts.to_dict(), bus_count)
+    assigned_routes = [route for route in routes for _ in range(vehicle_counts[route])]
+    rows: list[dict[str, Any]] = []
+    for index, route_id in enumerate(assigned_routes):
+        seed = hashlib.sha256(f"{scenario_description}|fleet|{index}|{route_id}".encode("utf-8")).hexdigest()
+        local_rng = random.Random(int(seed[:16], 16))
+        rows.append(
+            {
+                "bus_id": f"{bus_prefix}{index + 1:05d}",
+                "battery_capacity": 300,
+                "initial_soc": round(local_rng.uniform(0.72, 0.88), 3),
+                "max_soc": 0.9,
+                "min_soc": 0.2,
+                "assigned_route": route_id,
+                "source": f"{scenario_description}; route assignment weighted by selected GTFS trip frequency",
+            }
+        )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_csv(output_path, index=False)
+    logger.info("Generated penetration scenario vehicles at %s", output_path)
+
+
+def apportion_vehicles_to_routes(route_counts: dict[str, int], bus_count: int) -> dict[str, int]:
+    """Allocate vehicles by trip frequency while covering every route when possible."""
+
+    routes = [route for route, _ in sorted(route_counts.items(), key=lambda item: (-item[1], item[0]))]
+    if bus_count < len(routes):
+        return {route: 1 for route in routes[:bus_count]}
+
+    allocation = {route: 1 for route in routes}
+    remaining = bus_count - len(routes)
+    if remaining == 0:
+        return allocation
+
+    total_trips = sum(route_counts.values())
+    quotas = {route: remaining * route_counts[route] / total_trips for route in routes}
+    for route, quota in quotas.items():
+        extra = math.floor(quota)
+        allocation[route] += extra
+        remaining -= extra
+
+    remainders = sorted(
+        ((quota - math.floor(quota), route) for route, quota in quotas.items()),
+        key=lambda item: (-item[0], item[1]),
+    )
+    for _, route in remainders[:remaining]:
+        allocation[route] += 1
+    return allocation
+
+
+def ensure_penetration_stations(
+    output_path: Path,
+    station_count: int,
+    station_prefix: str,
+    scenario_description: str,
+    fast_chargers: int,
+    slow_chargers: int,
+) -> None:
+    """Generate scenario charging hubs from the base station table when absent."""
+
+    if output_path.exists():
+        return
+    if not STATIONS_INPUT_PATH.exists():
+        raise FileNotFoundError(f"Cannot build scenario stations before base stations exist: {STATIONS_INPUT_PATH}")
+
+    base_stations = pd.read_csv(STATIONS_INPUT_PATH)
+    rows: list[dict[str, Any]] = []
+    for index in range(station_count):
+        source_station = base_stations.iloc[index % len(base_stations)]
+        rows.append(
+            {
+                "station_id": f"{station_prefix}{index + 1:03d}",
+                "station_name": f"{scenario_description} Charging Hub {index + 1:03d}",
+                "location": source_station["location"],
+                "stop_id": source_station["stop_id"],
+                "lat": source_station["lat"],
+                "lon": source_station["lon"],
+                "fast_chargers": fast_chargers,
+                "slow_chargers": slow_chargers,
+                "fast_power": 120,
+                "slow_power": 40,
+                "source": f"{scenario_description}; synthetic charging infrastructure scaled by scenario",
+            }
+        )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_csv(output_path, index=False)
+    logger.info("Generated penetration scenario stations at %s", output_path)
 
 
 def ensure_hk_scale_vehicles(output_path: Path) -> None:
@@ -564,7 +814,7 @@ def schedule_charge_if_needed(
 
 def run_jsq_scheduler(
     config: JSQConfig | None = None,
-    scenario_name: str = "small_demo",
+    scenario_name: str = "full",
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """
     Run the JSQ baseline scheduler.
@@ -636,6 +886,7 @@ def calculate_metrics(
     trip_count = int(len(schedule))
     completed_count = int(len(completed))
     unserved_count = trip_count - completed_count
+    total_charged_energy_kwh = float(charges["charged_energy_kwh"].sum())
     final_soc_values = [vehicle.current_soc for vehicle in vehicles]
     return {
         "algorithm": "JSQ",
@@ -649,7 +900,9 @@ def calculate_metrics(
         "vehicle_count": int(len(vehicles)),
         "charging_event_count": int(len(charges)),
         "total_predicted_energy_kwh": float(completed["predicted_energy_kwh"].sum()),
-        "total_charged_energy_kwh": float(charges["charged_energy_kwh"].sum()),
+        "total_charged_energy_kwh": total_charged_energy_kwh,
+        "grid_emission_factor_kgco2_per_kwh": GRID_EMISSION_FACTOR_KGCO2_PER_KWH,
+        "total_charging_co2_kg": total_charged_energy_kwh * GRID_EMISSION_FACTOR_KGCO2_PER_KWH,
         "total_charging_cost": float(charges["charging_cost"].sum()),
         "average_wait_time_min": float(charges["wait_time_min"].mean()) if not charges.empty else 0.0,
         "max_wait_time_min": float(charges["wait_time_min"].max()) if not charges.empty else 0.0,
@@ -688,9 +941,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run JSQ baseline charging scheduler.")
     parser.add_argument(
         "--scenario",
-        choices=["small_demo", "hk_scale", "default"],
-        default="small_demo",
-        help="Experiment scenario to run. small_demo is the default quick scenario.",
+        choices=SUPPORTED_SCENARIOS,
+        default="full",
+        help="Experiment scenario to run. full is the default full coverage scenario.",
     )
     return parser.parse_args()
 

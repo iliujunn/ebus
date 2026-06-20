@@ -1,0 +1,37 @@
+{
+  "algorithm": "JSQ",
+  "scenario_name": "current",
+  "description": "Join the Shortest Queue baseline with FCFS charger queues",
+  "scenario_description": "Current pilot-stage e-bus penetration scenario",
+  "trip_count": 1713,
+  "completed_trip_count": 1713,
+  "unserved_trip_count": 0,
+  "completion_rate": 1.0,
+  "vehicle_count": 150,
+  "charging_event_count": 0,
+  "total_predicted_energy_kwh": 13273.797479524292,
+  "total_charged_energy_kwh": 0.0,
+  "total_charging_cost": 0.0,
+  "average_wait_time_min": 0.0,
+  "max_wait_time_min": 0.0,
+  "average_charge_duration_min": 0.0,
+  "min_final_soc": 0.3241627174697312,
+  "max_final_soc": 0.6751760118139654,
+  "runtime_seconds": 0.1753067090176046,
+  "input_paths": {
+    "trips": "data/processed/trips_current.csv",
+    "vehicles": "data/processed/vehicles_current_150.csv",
+    "stations": "data/processed/stations_current.csv",
+    "prices": "data/processed/prices.csv",
+    "energy_predictions": "data/processed/energy_predictions.csv"
+  },
+  "schedule_output_path": "outputs/schedules/jsq_schedule_current.csv",
+  "metrics_output_path": "outputs/metrics/jsq_metrics_current.json",
+  "config": {
+    "charge_trigger_soc": 0.3,
+    "target_soc": 0.9,
+    "charger_travel_time_min": 0.0
+  },
+  "grid_emission_factor_kgco2_per_kwh": 0.55,
+  "total_charging_co2_kg": 0.0
+}

@@ -5,8 +5,11 @@ from __future__ import annotations
 
 import json
 import logging
+import argparse
 import random
 import time
+import os
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -16,7 +19,9 @@ import pandas as pd
 from src.baseline_jsq import (
     PROJECT_ROOT,
     ChargerQueue,
+    GRID_EMISSION_FACTOR_KGCO2_PER_KWH,
     SchedulerPaths,
+    SUPPORTED_SCENARIOS,
     VehicleState,
     build_charger_queues,
     build_price_periods,
@@ -32,6 +37,16 @@ from src.baseline_jsq import (
 
 GA_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "ga_schedule.csv"
 GA_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "ga_metrics.json"
+GA_SMALL_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "ga_schedule_small_demo.csv"
+GA_SMALL_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "ga_metrics_small_demo.json"
+GA_HK_SCALE_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "ga_schedule_hk_scale.csv"
+GA_HK_SCALE_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "ga_metrics_hk_scale.json"
+GA_CURRENT_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "ga_schedule_current.csv"
+GA_CURRENT_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "ga_metrics_current.json"
+GA_PLANNED_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "ga_schedule_planned.csv"
+GA_PLANNED_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "ga_metrics_planned.json"
+GA_FULL_SCHEDULE_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "schedules" / "ga_schedule_full.csv"
+GA_FULL_METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "metrics" / "ga_metrics_full.json"
 
 
 logging.basicConfig(
@@ -45,7 +60,7 @@ logger = logging.getLogger(__name__)
 class GAConfig:
     """Configuration for the compact policy-level genetic search."""
 
-    scenario_name: str = "default"
+    scenario_name: str = "full"
     population_size: int = 10
     generations: int = 6
     elite_count: int = 2
@@ -63,6 +78,15 @@ class GAConfig:
     unserved_trip_penalty: float = 100_000.0
     wait_time_penalty: float = 0.5
     low_soc_penalty: float = 10_000.0
+    parallel_workers: int = 0
+
+
+@dataclass(frozen=True)
+class GAOutputPaths:
+    """Output artifact paths for one GA scenario run."""
+
+    schedule_output_path: Path
+    metrics_output_path: Path
 
 
 @dataclass(frozen=True)
@@ -123,6 +147,13 @@ class SimulationResult:
     max_final_soc: float
     fitness_score: float
     schedule: pd.DataFrame | None = None
+
+
+_WORKER_TRIPS: list[TripRecord] | None = None
+_WORKER_INITIAL_VEHICLES: list[VehicleState] | None = None
+_WORKER_CHARGER_TEMPLATES: list[ChargerQueue] | None = None
+_WORKER_PRICE_PERIODS: list[dict[str, Any]] | None = None
+_WORKER_CONFIG: GAConfig | None = None
 
 
 def clamp(value: float, lower_bound: float, upper_bound: float) -> float:
@@ -505,6 +536,62 @@ def tournament_select(
     return min(contenders, key=lambda item: item[0])[1]
 
 
+def resolve_parallel_worker_count(config: GAConfig, population_size: int) -> int:
+    """Choose how many worker processes to use for independent fitness evaluations."""
+
+    if config.parallel_workers < 0:
+        return 1
+    if config.parallel_workers > 0:
+        return max(1, min(config.parallel_workers, population_size))
+    cpu_count = os.cpu_count() or 1
+    return max(1, min(population_size, max(1, cpu_count - 1)))
+
+
+def init_fitness_worker(
+    trips: list[TripRecord],
+    initial_vehicles: list[VehicleState],
+    charger_templates: list[ChargerQueue],
+    price_periods: list[dict[str, Any]],
+    config: GAConfig,
+) -> None:
+    """Initialize read-only simulation inputs once per worker process."""
+
+    global _WORKER_TRIPS
+    global _WORKER_INITIAL_VEHICLES
+    global _WORKER_CHARGER_TEMPLATES
+    global _WORKER_PRICE_PERIODS
+    global _WORKER_CONFIG
+    _WORKER_TRIPS = trips
+    _WORKER_INITIAL_VEHICLES = initial_vehicles
+    _WORKER_CHARGER_TEMPLATES = charger_templates
+    _WORKER_PRICE_PERIODS = price_periods
+    _WORKER_CONFIG = config
+
+
+def evaluate_chromosome_worker(chromosome: Chromosome) -> tuple[tuple[float, ...], SimulationResult]:
+    """Evaluate one chromosome in a worker process."""
+
+    if (
+        _WORKER_TRIPS is None
+        or _WORKER_INITIAL_VEHICLES is None
+        or _WORKER_CHARGER_TEMPLATES is None
+        or _WORKER_PRICE_PERIODS is None
+        or _WORKER_CONFIG is None
+    ):
+        raise RuntimeError("GA fitness worker was not initialized.")
+    return (
+        chromosome.normalized_key(),
+        simulate_chromosome(
+            chromosome,
+            _WORKER_TRIPS,
+            _WORKER_INITIAL_VEHICLES,
+            _WORKER_CHARGER_TEMPLATES,
+            _WORKER_PRICE_PERIODS,
+            _WORKER_CONFIG,
+        ),
+    )
+
+
 def run_genetic_search(
     trips: list[TripRecord],
     initial_vehicles: list[VehicleState],
@@ -518,61 +605,99 @@ def run_genetic_search(
     population = seed_population(rng, config)
     fitness_cache: dict[tuple[float, ...], SimulationResult] = {}
     history: list[dict[str, Any]] = []
+    worker_count = resolve_parallel_worker_count(config, config.population_size)
 
-    def evaluate(chromosome: Chromosome) -> SimulationResult:
+    def evaluate_missing(
+        chromosomes: list[Chromosome],
+        executor: ProcessPoolExecutor | None,
+    ) -> None:
+        missing_by_key: dict[tuple[float, ...], Chromosome] = {}
+        for chromosome in chromosomes:
+            key = chromosome.normalized_key()
+            if key not in fitness_cache:
+                missing_by_key.setdefault(key, chromosome)
+        if not missing_by_key:
+            return
+
+        missing = list(missing_by_key.values())
+        if executor is None or len(missing) == 1:
+            for chromosome in missing:
+                fitness_cache[chromosome.normalized_key()] = simulate_chromosome(
+                    chromosome,
+                    trips,
+                    initial_vehicles,
+                    charger_templates,
+                    price_periods,
+                    config,
+                )
+            return
+
+        for key, result in executor.map(evaluate_chromosome_worker, missing):
+            fitness_cache[key] = result
+
+    def evaluate(chromosome: Chromosome, executor: ProcessPoolExecutor | None) -> SimulationResult:
         key = chromosome.normalized_key()
         if key not in fitness_cache:
-            fitness_cache[key] = simulate_chromosome(
-                chromosome,
-                trips,
-                initial_vehicles,
-                charger_templates,
-                price_periods,
-                config,
-            )
+            evaluate_missing([chromosome], executor)
         return fitness_cache[key]
 
-    for generation in range(config.generations):
+    logger.info("GA fitness evaluation workers: %s", worker_count)
+    executor: ProcessPoolExecutor | None = None
+    if worker_count > 1:
+        executor = ProcessPoolExecutor(
+            max_workers=worker_count,
+            initializer=init_fitness_worker,
+            initargs=(trips, initial_vehicles, charger_templates, price_periods, config),
+        )
+
+    try:
+        for generation in range(config.generations):
+            evaluate_missing(population, executor)
+            ranked_population = sorted(
+                ((fitness_cache[chromosome.normalized_key()].fitness_score, chromosome) for chromosome in population),
+                key=lambda item: item[0],
+            )
+            best_score, best_chromosome = ranked_population[0]
+            best_result = evaluate(best_chromosome, executor)
+            history.append(
+                {
+                    "generation": generation + 1,
+                    "best_fitness_score": float(best_score),
+                    "best_completed_trip_count": int(best_result.completed_trip_count),
+                    "best_unserved_trip_count": int(best_result.unserved_trip_count),
+                    "best_total_charging_cost": float(best_result.total_charging_cost),
+                    "best_chromosome": asdict(best_chromosome),
+                }
+            )
+            logger.info(
+                "GA generation %s/%s: completed=%s, unserved=%s, cost=%.2f, fitness=%.2f",
+                generation + 1,
+                config.generations,
+                best_result.completed_trip_count,
+                best_result.unserved_trip_count,
+                best_result.total_charging_cost,
+                best_score,
+            )
+
+            next_population = [chromosome for _, chromosome in ranked_population[: config.elite_count]]
+            while len(next_population) < config.population_size:
+                parent_a = tournament_select(ranked_population, rng, config)
+                parent_b = tournament_select(ranked_population, rng, config)
+                child = crossover(parent_a, parent_b, rng, config)
+                next_population.append(mutate(child, rng, config))
+            population = next_population
+
+        evaluate_missing(population, executor)
         ranked_population = sorted(
-            ((evaluate(chromosome).fitness_score, chromosome) for chromosome in population),
+            ((fitness_cache[chromosome.normalized_key()].fitness_score, chromosome) for chromosome in population),
             key=lambda item: item[0],
         )
-        best_score, best_chromosome = ranked_population[0]
-        best_result = evaluate(best_chromosome)
-        history.append(
-            {
-                "generation": generation + 1,
-                "best_fitness_score": float(best_score),
-                "best_completed_trip_count": int(best_result.completed_trip_count),
-                "best_unserved_trip_count": int(best_result.unserved_trip_count),
-                "best_total_charging_cost": float(best_result.total_charging_cost),
-                "best_chromosome": asdict(best_chromosome),
-            }
-        )
-        logger.info(
-            "GA generation %s/%s: completed=%s, unserved=%s, cost=%.2f, fitness=%.2f",
-            generation + 1,
-            config.generations,
-            best_result.completed_trip_count,
-            best_result.unserved_trip_count,
-            best_result.total_charging_cost,
-            best_score,
-        )
+    finally:
+        if executor is not None:
+            executor.shutdown()
 
-        next_population = [chromosome for _, chromosome in ranked_population[: config.elite_count]]
-        while len(next_population) < config.population_size:
-            parent_a = tournament_select(ranked_population, rng, config)
-            parent_b = tournament_select(ranked_population, rng, config)
-            child = crossover(parent_a, parent_b, rng, config)
-            next_population.append(mutate(child, rng, config))
-        population = next_population
-
-    ranked_population = sorted(
-        ((evaluate(chromosome).fitness_score, chromosome) for chromosome in population),
-        key=lambda item: item[0],
-    )
     best_chromosome = ranked_population[0][1]
-    best_result = evaluate(best_chromosome)
+    best_result = evaluate(best_chromosome, None)
     return best_chromosome, best_result, history
 
 
@@ -599,6 +724,7 @@ def summarize_baseline(path: Path) -> dict[str, Any]:
     trip_count = int(len(schedule))
     completed_count = int(len(completed))
     total_cost = float(charges["charging_cost"].sum()) if "charging_cost" in charges else 0.0
+    total_charged_energy_kwh = float(charges["charged_energy_kwh"].sum()) if "charged_energy_kwh" in charges else 0.0
     return {
         "available": True,
         "schedule_path": str(path.relative_to(PROJECT_ROOT)),
@@ -607,10 +733,49 @@ def summarize_baseline(path: Path) -> dict[str, Any]:
         "unserved_trip_count": trip_count - completed_count,
         "completion_rate": float(completed_count / trip_count) if trip_count else 0.0,
         "charging_event_count": int(len(charges)),
+        "total_charged_energy_kwh": total_charged_energy_kwh,
+        "grid_emission_factor_kgco2_per_kwh": GRID_EMISSION_FACTOR_KGCO2_PER_KWH,
+        "total_charging_co2_kg": total_charged_energy_kwh * GRID_EMISSION_FACTOR_KGCO2_PER_KWH,
         "total_charging_cost": total_cost,
         "average_wait_time_min": float(charges["wait_time_min"].mean()) if not charges.empty else 0.0,
         "max_wait_time_min": float(charges["wait_time_min"].max()) if not charges.empty else 0.0,
     }
+
+
+def build_ga_output_paths(scenario_name: str) -> GAOutputPaths:
+    """Resolve GA output paths without overwriting artifacts from other scenarios."""
+
+    if scenario_name == "current":
+        return GAOutputPaths(
+            schedule_output_path=GA_CURRENT_SCHEDULE_OUTPUT_PATH,
+            metrics_output_path=GA_CURRENT_METRICS_OUTPUT_PATH,
+        )
+    if scenario_name == "planned":
+        return GAOutputPaths(
+            schedule_output_path=GA_PLANNED_SCHEDULE_OUTPUT_PATH,
+            metrics_output_path=GA_PLANNED_METRICS_OUTPUT_PATH,
+        )
+    if scenario_name == "full":
+        return GAOutputPaths(
+            schedule_output_path=GA_FULL_SCHEDULE_OUTPUT_PATH,
+            metrics_output_path=GA_FULL_METRICS_OUTPUT_PATH,
+        )
+    if scenario_name == "small_demo":
+        return GAOutputPaths(
+            schedule_output_path=GA_SMALL_SCHEDULE_OUTPUT_PATH,
+            metrics_output_path=GA_SMALL_METRICS_OUTPUT_PATH,
+        )
+    if scenario_name == "hk_scale":
+        return GAOutputPaths(
+            schedule_output_path=GA_HK_SCALE_SCHEDULE_OUTPUT_PATH,
+            metrics_output_path=GA_HK_SCALE_METRICS_OUTPUT_PATH,
+        )
+    if scenario_name == "default":
+        return GAOutputPaths(
+            schedule_output_path=GA_SCHEDULE_OUTPUT_PATH,
+            metrics_output_path=GA_METRICS_OUTPUT_PATH,
+        )
+    raise ValueError(f"Unsupported GA scenario: {scenario_name}")
 
 
 def ensure_baseline_summary(paths: SchedulerPaths) -> dict[str, Any]:
@@ -633,6 +798,7 @@ def build_metrics(
     baseline: dict[str, Any],
     history: list[dict[str, Any]],
     paths: SchedulerPaths,
+    output_paths: GAOutputPaths,
     config: GAConfig,
     start_time: float,
 ) -> dict[str, Any]:
@@ -644,7 +810,9 @@ def build_metrics(
     )
     metrics: dict[str, Any] = {
         "algorithm": "GA",
+        "scenario_name": paths.scenario_name,
         "description": "Genetic algorithm over charging-policy parameters with JSQ schedule as baseline reference",
+        "scenario_description": paths.description,
         "trip_count": int(result.trip_count),
         "completed_trip_count": int(result.completed_trip_count),
         "unserved_trip_count": int(result.unserved_trip_count),
@@ -653,6 +821,8 @@ def build_metrics(
         "charging_event_count": int(result.charging_event_count),
         "total_predicted_energy_kwh": float(result.total_predicted_energy_kwh),
         "total_charged_energy_kwh": float(result.total_charged_energy_kwh),
+        "grid_emission_factor_kgco2_per_kwh": GRID_EMISSION_FACTOR_KGCO2_PER_KWH,
+        "total_charging_co2_kg": float(result.total_charged_energy_kwh * GRID_EMISSION_FACTOR_KGCO2_PER_KWH),
         "total_charging_cost": float(result.total_charging_cost),
         "average_wait_time_min": float(average_wait_time_min),
         "max_wait_time_min": float(result.max_wait_time_min),
@@ -669,8 +839,8 @@ def build_metrics(
             "energy_predictions": str(paths.energy_input_path.relative_to(PROJECT_ROOT)),
             "baseline_schedule": str(paths.schedule_output_path.relative_to(PROJECT_ROOT)),
         },
-        "schedule_output_path": str(GA_SCHEDULE_OUTPUT_PATH.relative_to(PROJECT_ROOT)),
-        "metrics_output_path": str(GA_METRICS_OUTPUT_PATH.relative_to(PROJECT_ROOT)),
+        "schedule_output_path": str(output_paths.schedule_output_path.relative_to(PROJECT_ROOT)),
+        "metrics_output_path": str(output_paths.metrics_output_path.relative_to(PROJECT_ROOT)),
         "best_chromosome": asdict(chromosome),
         "config": asdict(config),
         "ga_history": history,
@@ -688,21 +858,25 @@ def build_metrics(
                     if baseline["total_charging_cost"]
                     else 0.0
                 ),
+                "charging_co2_delta_kg": float(
+                    result.total_charged_energy_kwh * GRID_EMISSION_FACTOR_KGCO2_PER_KWH
+                    - baseline.get("total_charging_co2_kg", 0.0)
+                ),
             }
         )
     return metrics
 
 
-def save_outputs(schedule: pd.DataFrame, metrics: dict[str, Any]) -> None:
+def save_outputs(schedule: pd.DataFrame, metrics: dict[str, Any], output_paths: GAOutputPaths) -> None:
     """Persist GA schedule and metrics artifacts."""
 
-    GA_SCHEDULE_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    GA_METRICS_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    schedule.to_csv(GA_SCHEDULE_OUTPUT_PATH, index=False)
-    with GA_METRICS_OUTPUT_PATH.open("w", encoding="utf-8") as file:
+    output_paths.schedule_output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_paths.metrics_output_path.parent.mkdir(parents=True, exist_ok=True)
+    schedule.to_csv(output_paths.schedule_output_path, index=False)
+    with output_paths.metrics_output_path.open("w", encoding="utf-8") as file:
         json.dump(metrics, file, ensure_ascii=False, indent=2)
-    logger.info("Saved GA schedule to %s", GA_SCHEDULE_OUTPUT_PATH)
-    logger.info("Saved GA metrics to %s", GA_METRICS_OUTPUT_PATH)
+    logger.info("Saved GA schedule to %s", output_paths.schedule_output_path)
+    logger.info("Saved GA metrics to %s", output_paths.metrics_output_path)
 
 
 def run_ga_optimizer(config: GAConfig | None = None) -> tuple[pd.DataFrame, dict[str, Any]]:
@@ -711,6 +885,7 @@ def run_ga_optimizer(config: GAConfig | None = None) -> tuple[pd.DataFrame, dict
     resolved_config = config or GAConfig()
     start_time = time.perf_counter()
     paths = build_scheduler_paths(resolved_config.scenario_name)
+    output_paths = build_ga_output_paths(resolved_config.scenario_name)
     trips_df, vehicles_df, stations_df, prices_df = load_input_data(paths)
     trips = trips_to_records(trips_df)
     initial_vehicles = build_vehicle_states(vehicles_df)
@@ -737,8 +912,8 @@ def run_ga_optimizer(config: GAConfig | None = None) -> tuple[pd.DataFrame, dict
     if final_result.schedule is None:
         raise RuntimeError("GA final simulation did not produce a schedule.")
 
-    metrics = build_metrics(final_result, best_chromosome, baseline, history, paths, resolved_config, start_time)
-    save_outputs(final_result.schedule, metrics)
+    metrics = build_metrics(final_result, best_chromosome, baseline, history, paths, output_paths, resolved_config, start_time)
+    save_outputs(final_result.schedule, metrics, output_paths)
     logger.info(
         "GA optimizer finished: completed=%s, unserved=%s, cost=%.2f, runtime=%.2fs",
         metrics["completed_trip_count"],
@@ -749,10 +924,63 @@ def run_ga_optimizer(config: GAConfig | None = None) -> tuple[pd.DataFrame, dict
     return final_result.schedule, metrics
 
 
+def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments for GA scenario runs."""
+
+    parser = argparse.ArgumentParser(description="Run genetic-algorithm charging scheduler.")
+    parser.add_argument(
+        "--scenario",
+        choices=SUPPORTED_SCENARIOS,
+        default="full",
+        help="Experiment scenario to run. full is the default full coverage scenario.",
+    )
+    parser.add_argument("--population-size", type=int, default=10)
+    parser.add_argument("--generations", type=int, default=6)
+    parser.add_argument("--elite-count", type=int, default=2)
+    parser.add_argument("--tournament-size", type=int, default=3)
+    parser.add_argument("--mutation-rate", type=float, default=0.25)
+    parser.add_argument("--random-seed", type=int, default=42)
+    parser.add_argument(
+        "--parallel-workers",
+        type=int,
+        default=0,
+        help="Parallel worker processes for GA fitness evaluation. Use 0 for auto, 1 to disable parallelism.",
+    )
+    return parser.parse_args()
+
+
+def config_from_args(args: argparse.Namespace) -> GAConfig:
+    """Build a validated GA config from CLI arguments."""
+
+    if args.population_size < 1:
+        raise ValueError("--population-size must be at least 1.")
+    if args.generations < 1:
+        raise ValueError("--generations must be at least 1.")
+    if args.elite_count < 1 or args.elite_count > args.population_size:
+        raise ValueError("--elite-count must be between 1 and --population-size.")
+    if args.tournament_size < 1:
+        raise ValueError("--tournament-size must be at least 1.")
+    if not 0.0 <= args.mutation_rate <= 1.0:
+        raise ValueError("--mutation-rate must be between 0 and 1.")
+    if args.parallel_workers < 0:
+        raise ValueError("--parallel-workers must be 0 or a positive integer.")
+
+    return GAConfig(
+        scenario_name=args.scenario,
+        population_size=args.population_size,
+        generations=args.generations,
+        elite_count=args.elite_count,
+        tournament_size=args.tournament_size,
+        mutation_rate=args.mutation_rate,
+        random_seed=args.random_seed,
+        parallel_workers=args.parallel_workers,
+    )
+
+
 def main() -> None:
     """CLI entrypoint used by `python -m src.ga_optimizer` and `make ga`."""
 
-    run_ga_optimizer()
+    run_ga_optimizer(config=config_from_args(parse_args()))
 
 
 if __name__ == "__main__":

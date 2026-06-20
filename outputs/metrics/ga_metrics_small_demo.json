@@ -1,0 +1,167 @@
+{
+  "algorithm": "GA",
+  "description": "Genetic algorithm over charging-policy parameters with JSQ schedule as baseline reference",
+  "trip_count": 82,
+  "completed_trip_count": 82,
+  "unserved_trip_count": 0,
+  "completion_rate": 1.0,
+  "vehicle_count": 20,
+  "charging_event_count": 0,
+  "total_predicted_energy_kwh": 1739.3977579797404,
+  "total_charged_energy_kwh": 0.0,
+  "total_charging_cost": 0.0,
+  "average_wait_time_min": 0.0,
+  "max_wait_time_min": 0.0,
+  "average_charge_duration_min": 0.0,
+  "min_final_soc": 0.380392995263498,
+  "max_final_soc": 0.6227478289847325,
+  "fitness_score": 0.0,
+  "runtime_seconds": 0.6338252080604434,
+  "input_paths": {
+    "trips": "data/processed/trips_hk_gtfs.csv",
+    "vehicles": "data/processed/vehicles.csv",
+    "stations": "data/processed/stations.csv",
+    "prices": "data/processed/prices.csv",
+    "energy_predictions": "data/processed/energy_predictions.csv",
+    "baseline_schedule": "outputs/schedules/jsq_schedule_small_demo.csv"
+  },
+  "schedule_output_path": "outputs/schedules/ga_schedule_small_demo.csv",
+  "metrics_output_path": "outputs/metrics/ga_metrics_small_demo.json",
+  "best_chromosome": {
+    "trigger_soc": 0.3,
+    "offpeak_target_soc": 0.9,
+    "peak_target_soc": 0.9,
+    "cost_weight": 0.0,
+    "wait_weight": 0.0,
+    "slow_charger_penalty": 0.0
+  },
+  "config": {
+    "scenario_name": "small_demo",
+    "population_size": 10,
+    "generations": 6,
+    "elite_count": 2,
+    "tournament_size": 3,
+    "mutation_rate": 0.25,
+    "random_seed": 42,
+    "charge_trigger_min": 0.22,
+    "charge_trigger_max": 0.45,
+    "target_soc_min": 0.55,
+    "target_soc_max": 0.9,
+    "cost_weight_max": 2.5,
+    "wait_weight_max": 1.0,
+    "slow_charger_penalty_min": -20.0,
+    "slow_charger_penalty_max": 40.0,
+    "unserved_trip_penalty": 100000.0,
+    "wait_time_penalty": 0.5,
+    "low_soc_penalty": 10000.0,
+    "parallel_workers": 0
+  },
+  "ga_history": [
+    {
+      "generation": 1,
+      "best_fitness_score": 0.0,
+      "best_completed_trip_count": 82,
+      "best_unserved_trip_count": 0,
+      "best_total_charging_cost": 0.0,
+      "best_chromosome": {
+        "trigger_soc": 0.3,
+        "offpeak_target_soc": 0.9,
+        "peak_target_soc": 0.9,
+        "cost_weight": 0.0,
+        "wait_weight": 0.0,
+        "slow_charger_penalty": 0.0
+      }
+    },
+    {
+      "generation": 2,
+      "best_fitness_score": 0.0,
+      "best_completed_trip_count": 82,
+      "best_unserved_trip_count": 0,
+      "best_total_charging_cost": 0.0,
+      "best_chromosome": {
+        "trigger_soc": 0.3,
+        "offpeak_target_soc": 0.9,
+        "peak_target_soc": 0.9,
+        "cost_weight": 0.0,
+        "wait_weight": 0.0,
+        "slow_charger_penalty": 0.0
+      }
+    },
+    {
+      "generation": 3,
+      "best_fitness_score": 0.0,
+      "best_completed_trip_count": 82,
+      "best_unserved_trip_count": 0,
+      "best_total_charging_cost": 0.0,
+      "best_chromosome": {
+        "trigger_soc": 0.3,
+        "offpeak_target_soc": 0.9,
+        "peak_target_soc": 0.9,
+        "cost_weight": 0.0,
+        "wait_weight": 0.0,
+        "slow_charger_penalty": 0.0
+      }
+    },
+    {
+      "generation": 4,
+      "best_fitness_score": 0.0,
+      "best_completed_trip_count": 82,
+      "best_unserved_trip_count": 0,
+      "best_total_charging_cost": 0.0,
+      "best_chromosome": {
+        "trigger_soc": 0.3,
+        "offpeak_target_soc": 0.9,
+        "peak_target_soc": 0.9,
+        "cost_weight": 0.0,
+        "wait_weight": 0.0,
+        "slow_charger_penalty": 0.0
+      }
+    },
+    {
+      "generation": 5,
+      "best_fitness_score": 0.0,
+      "best_completed_trip_count": 82,
+      "best_unserved_trip_count": 0,
+      "best_total_charging_cost": 0.0,
+      "best_chromosome": {
+        "trigger_soc": 0.3,
+        "offpeak_target_soc": 0.9,
+        "peak_target_soc": 0.9,
+        "cost_weight": 0.0,
+        "wait_weight": 0.0,
+        "slow_charger_penalty": 0.0
+      }
+    },
+    {
+      "generation": 6,
+      "best_fitness_score": 0.0,
+      "best_completed_trip_count": 82,
+      "best_unserved_trip_count": 0,
+      "best_total_charging_cost": 0.0,
+      "best_chromosome": {
+        "trigger_soc": 0.3,
+        "offpeak_target_soc": 0.9,
+        "peak_target_soc": 0.9,
+        "cost_weight": 0.0,
+        "wait_weight": 0.0,
+        "slow_charger_penalty": 0.0
+      }
+    }
+  ],
+  "baseline_comparison": {
+    "available": true,
+    "schedule_path": "outputs/schedules/jsq_schedule_small_demo.csv",
+    "trip_count": 82,
+    "completed_trip_count": 82,
+    "unserved_trip_count": 0,
+    "completion_rate": 1.0,
+    "charging_event_count": 0,
+    "total_charging_cost": 0.0,
+    "average_wait_time_min": 0.0,
+    "max_wait_time_min": 0.0,
+    "completed_trip_delta": 0,
+    "unserved_trip_delta": 0,
+    "charging_cost_delta": 0.0,
+    "charging_cost_delta_pct": 0.0
+  }
+}

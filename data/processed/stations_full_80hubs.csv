@@ -1,0 +1,81 @@
+station_id,station_name,location,stop_id,lat,lon,fast_chargers,slow_chargers,fast_power,slow_power,source
+FULLCS001,[KMB] 天恒邨总站 Full e-bus coverage scenario Charging Hub,[KMB] 天恒邨总站,9888,22.46910,113.99924,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS002,[CTB] 会展站 Full e-bus coverage scenario Charging Hub,[CTB] 会展站,10000110,22.28161,114.17548,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS003,[XB] 皇岗 Full e-bus coverage scenario Charging Hub,[XB] 皇岗,12743,22.52240,114.06865,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS004,[CTB] 屯门码头 Full e-bus coverage scenario Charging Hub,[CTB] 屯门码头,1242,22.37254,113.96673,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS005,港铁大学站巴士总站 Full e-bus coverage scenario Charging Hub,港铁大学站巴士总站,20002275,22.41272,114.21079,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS006,[CTB] 小西湾 (蓝湾半岛) Full e-bus coverage scenario Charging Hub,[CTB] 小西湾 (蓝湾半岛),1546,22.26610,114.25096,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS007,大埔墟站专线小巴总站 Full e-bus coverage scenario Charging Hub,大埔墟站专线小巴总站,20001193,22.44381,114.17042,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS008,坑口站公共运输交汇处 Full e-bus coverage scenario Charging Hub,坑口站公共运输交汇处,20002597,22.31584,114.26424,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS009,[KMB] 大埔墟站巴士总站 Full e-bus coverage scenario Charging Hub,[KMB] 大埔墟站巴士总站,6261,22.44378,114.16934,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS010,上水站小巴总站 Full e-bus coverage scenario Charging Hub,上水站小巴总站,20001384,22.50204,114.12778,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS011,[KMB] 元朗(西)总站 Full e-bus coverage scenario Charging Hub,[KMB] 元朗(西)总站,9965,22.44519,114.02490,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS012,[CTB] 天水围站 - 屏欣苑 Full e-bus coverage scenario Charging Hub,[CTB] 天水围站 - 屏欣苑,9908,22.44640,114.00360,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS013,玛丽医院 Full e-bus coverage scenario Charging Hub,玛丽医院,20019072,22.27067,114.13065,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS014,黄大仙公共小型巴士(专线)服务总站 Full e-bus coverage scenario Charging Hub,黄大仙公共小型巴士(专线)服务总站,20022571,22.34328,114.19530,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS015,天后站公共运输交汇处 Full e-bus coverage scenario Charging Hub,天后站公共运输交汇处,20000243,22.28267,114.19145,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS016,荃湾中心 Full e-bus coverage scenario Charging Hub,荃湾中心,20015998,22.37900,114.10787,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS017,蓝澄湾第三座 Full e-bus coverage scenario Charging Hub,蓝澄湾第三座,20016768,22.34297,114.10991,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS018,荃湾街市街 Full e-bus coverage scenario Charging Hub,荃湾街市街,20002178,22.37166,114.11698,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS019,耀东邨巴士总站 Full e-bus coverage scenario Charging Hub,耀东邨巴士总站,20007726,22.27750,114.22332,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS020,荃湾站 Full e-bus coverage scenario Charging Hub,荃湾站,20016071,22.37259,114.11894,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS021,[CTB] 高铁西九龙站 Full e-bus coverage scenario Charging Hub,[CTB] 高铁西九龙站,13341,22.30684,114.16446,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS022,海贵路公共运输交汇处 Full e-bus coverage scenario Charging Hub,海贵路公共运输交汇处,20012208,22.36833,114.11067,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS023,[LRTFeeder] 兆麟 Full e-bus coverage scenario Charging Hub,[LRTFeeder] 兆麟,12956,22.38546,113.97688,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS024,"康盛花园巴士总站, 景岭书院外 Full e-bus coverage scenario Charging Hub","康盛花园巴士总站, 景岭书院外",20014659,22.31865,114.25372,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS025,[CTB] 中环 (港澳码头) Full e-bus coverage scenario Charging Hub,[CTB] 中环 (港澳码头),125,22.28855,114.15003,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS026,[KMB] 葵芳站巴士总站 Full e-bus coverage scenario Charging Hub,[KMB] 葵芳站巴士总站,9501,22.35649,114.12800,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS027,"康强街, 近康强大楼 Full e-bus coverage scenario Charging Hub","康强街, 近康强大楼",20001963,22.33475,114.19732,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS028,[CTB] 机场 (地面运输中心) Full e-bus coverage scenario Charging Hub,[CTB] 机场 (地面运输中心),929,22.31364,113.93708,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS029,石篱(梨贝街) Full e-bus coverage scenario Charging Hub,石篱(梨贝街),20016724,22.36263,114.13821,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS030,[CTB] 筲箕湾 Full e-bus coverage scenario Charging Hub,[CTB] 筲箕湾,550,22.27842,114.22833,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS031,丽城花园 Full e-bus coverage scenario Charging Hub,丽城花园,20016077,22.37073,114.10099,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS032,"葵仁路, 近葵芳站 Full e-bus coverage scenario Charging Hub","葵仁路, 近葵芳站",20016826,22.35746,114.12804,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS033,[XB] 鸦兰街 Full e-bus coverage scenario Charging Hub,[XB] 鸦兰街,12767,22.32302,114.16835,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS034,数码港公共运输交汇处 Full e-bus coverage scenario Charging Hub,数码港公共运输交汇处,20003337,22.26191,114.13014,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS035,西湾河（嘉亨湾）公共交通总站 Full e-bus coverage scenario Charging Hub,西湾河（嘉亨湾）公共交通总站,20003353,22.28488,114.22441,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS036,[KMB] 观塘码头 Full e-bus coverage scenario Charging Hub,[KMB] 观塘码头,8207,22.30779,114.22178,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS037,"骆克道, 近景隆街 Full e-bus coverage scenario Charging Hub","骆克道, 近景隆街",20006944,22.28070,114.18349,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS038,香港科技大学(北站) Full e-bus coverage scenario Charging Hub,香港科技大学(北站),20012474,22.33854,114.26206,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS039,[CTB] 屯门站 Full e-bus coverage scenario Charging Hub,[CTB] 屯门站,12400,22.39491,113.97390,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS040,青衣站 Full e-bus coverage scenario Charging Hub,青衣站,20008023,22.35947,114.10624,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS041,[KMB] 旺角东站 MOKO Full e-bus coverage scenario Charging Hub,[KMB] 旺角东站 MOKO,9115,22.32240,114.17222,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS042,青龙头(龙如路) Full e-bus coverage scenario Charging Hub,青龙头(龙如路),20016006,22.36283,114.04581,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS043,[KMB] 朗屏邨总站 Full e-bus coverage scenario Charging Hub,[KMB] 朗屏邨总站,9982,22.45031,114.02278,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS044,[KMB] 翠竹花园 Full e-bus coverage scenario Charging Hub,[KMB] 翠竹花园,9157,22.34652,114.18751,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS045,九龙塘（沙福道）公共运输交汇处 Full e-bus coverage scenario Charging Hub,九龙塘（沙福道）公共运输交汇处,20003363,22.33644,114.17677,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS046,[CTB] 尖沙咀 (天星码头) Full e-bus coverage scenario Charging Hub,[CTB] 尖沙咀 (天星码头),4025,22.29411,114.16906,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS047,[CTB] 荃湾西站 Full e-bus coverage scenario Charging Hub,[CTB] 荃湾西站,12760,22.36788,114.11070,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS048,[DB] 东涌站巴士总站非专营巴士落客区 Full e-bus coverage scenario Charging Hub,[DB] 东涌站巴士总站非专营巴士落客区,13396,22.28994,113.93963,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS049,[CTB] 蓝田站 Full e-bus coverage scenario Charging Hub,[CTB] 蓝田站,1326,22.30699,114.23370,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS050,"博泉街,欣泉楼外 Full e-bus coverage scenario Charging Hub","博泉街,欣泉楼外",20013035,22.37198,114.19852,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS051,[KMB+CTB] 美孚巴士总站/ 美孚 Full e-bus coverage scenario Charging Hub,[KMB+CTB] 美孚巴士总站/ 美孚,739,22.33710,114.14018,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS052,山尾街巴士总站 Full e-bus coverage scenario Charging Hub,山尾街巴士总站,20002176,22.39643,114.19427,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS053,[CTB] 和田邨 Full e-bus coverage scenario Charging Hub,[CTB] 和田邨,10000012,22.41280,113.96866,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS054,[LWB] 机场(地面运输中心)巴士总站 Full e-bus coverage scenario Charging Hub,[LWB] 机场(地面运输中心)巴士总站,10000034,22.31326,113.93773,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS055,[CTB] 北角码头 Full e-bus coverage scenario Charging Hub,[CTB] 北角码头,179,22.29329,114.20167,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS056,[LRTFeeder] 大棠黄泥墩村 Full e-bus coverage scenario Charging Hub,[LRTFeeder] 大棠黄泥墩村,12679,22.41633,114.02185,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS057,[CTB] 铜锣湾 (摩顿台) Full e-bus coverage scenario Charging Hub,[CTB] 铜锣湾 (摩顿台),481,22.27901,114.19024,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS058,[KMB+CTB] 上水转车站 - 上水总站/ 上水 Full e-bus coverage scenario Charging Hub,[KMB+CTB] 上水转车站 - 上水总站/ 上水,6625,22.50260,114.12780,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS059,[KMB] 富泰邨总站 Full e-bus coverage scenario Charging Hub,[KMB] 富泰邨总站,9854,22.41311,113.98263,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS060,凤园 Full e-bus coverage scenario Charging Hub,凤园,20006957,22.46528,114.18027,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS061,[CTB] 慈云山(中) Full e-bus coverage scenario Charging Hub,[CTB] 慈云山(中),1406,22.34849,114.20068,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS062,"福康街, 近金宝楼 Full e-bus coverage scenario Charging Hub","福康街, 近金宝楼",20015409,22.44510,114.02857,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS063,[CTB] 天水围市中心 Full e-bus coverage scenario Charging Hub,[CTB] 天水围市中心,1253,22.45851,114.00190,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS064,新屋家 Full e-bus coverage scenario Charging Hub,新屋家,20001212,22.43027,114.16309,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS065,荃湾(川龙街) Full e-bus coverage scenario Charging Hub,荃湾(川龙街),20016725,22.36973,114.11550,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS066,[CTB] 航天城 Full e-bus coverage scenario Charging Hub,[CTB] 航天城,10000258,22.31657,113.94123,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS067,[CTB] 中环 (交易广场) Full e-bus coverage scenario Charging Hub,[CTB] 中环 (交易广场),1441,22.28415,114.15771,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS068,坚尼地城站 Full e-bus coverage scenario Charging Hub,坚尼地城站,20009733,22.28135,114.12893,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS069,[KMB+CTB] 观塘(裕民坊)总站/ 观塘(裕民坊) Full e-bus coverage scenario Charging Hub,[KMB+CTB] 观塘(裕民坊)总站/ 观塘(裕民坊),8225,22.31439,114.22479,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS070,华贵邨巴士总站 Full e-bus coverage scenario Charging Hub,华贵邨巴士总站,20000272,22.24976,114.13974,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS071,坑口(北)公共运输交汇处 Full e-bus coverage scenario Charging Hub,坑口(北)公共运输交汇处,20001161,22.31791,114.26899,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS072,"[CTB] 大榄涌, 青山公路 Full e-bus coverage scenario Charging Hub","[CTB] 大榄涌, 青山公路",1196,22.36204,114.01917,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS073,[KMB+CTB] 九龙城码头巴士总站/ 九龙城码头 Full e-bus coverage scenario Charging Hub,[KMB+CTB] 九龙城码头巴士总站/ 九龙城码头,9035,22.31820,114.19346,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS074,钻石山站公共运输交汇处 Full e-bus coverage scenario Charging Hub,钻石山站公共运输交汇处,20000588,22.34052,114.20225,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS075,[KMB+CTB] 青衣站 Full e-bus coverage scenario Charging Hub,[KMB+CTB] 青衣站,9434,22.36012,114.10732,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS076,[CTB] 尖沙咀东 Full e-bus coverage scenario Charging Hub,[CTB] 尖沙咀东,1284,22.30180,114.17844,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS077,"华员径, 近华员村华信阁 Full e-bus coverage scenario Charging Hub","华员径, 近华员村华信阁",20015765,22.35036,114.13560,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS078,[CTB] 荃湾站 Full e-bus coverage scenario Charging Hub,[CTB] 荃湾站,9629,22.37387,114.11611,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS079,大角咀(维港湾)公共运输交汇处 Full e-bus coverage scenario Charging Hub,大角咀(维港湾)公共运输交汇处,20004190,22.31854,114.15881,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini
+FULLCS080,[NLB] 梅窝码头 Full e-bus coverage scenario Charging Hub,[NLB] 梅窝码头,12000,22.26485,114.00156,12,8,120,40,Full e-bus coverage scenario; hubs selected from high-frequency GTFS termini

@@ -1,0 +1,68 @@
+{
+  "input_path": "data/processed/path_candidates.csv",
+  "candidate_count": 231360,
+  "trip_count": 77120,
+  "strategies": [
+    {
+      "strategy": "Shortest distance",
+      "trip_count": 77120,
+      "total_distance_km": 744046.98,
+      "total_energy_kwh": 1475803.59,
+      "total_carbon_kgco2": 811706.02,
+      "average_distance_km": 9.64791208506224,
+      "average_energy_kwh": 19.13645733921162,
+      "average_carbon_kgco2": 10.525233661825727
+    },
+    {
+      "strategy": "Lowest energy",
+      "trip_count": 77120,
+      "total_distance_km": 744053.97,
+      "total_energy_kwh": 1475802.48,
+      "total_carbon_kgco2": 811705.39,
+      "average_distance_km": 9.648002723029045,
+      "average_energy_kwh": 19.13644294605809,
+      "average_carbon_kgco2": 10.52522549273859
+    }
+  ],
+  "path_type_strategies": [
+    {
+      "path_type": "shorter_with_more_slope",
+      "trip_count": 77120,
+      "total_distance_km": 744046.98,
+      "total_energy_kwh": 1475803.59,
+      "total_carbon_kgco2": 811706.02,
+      "average_distance_km": 9.64791208506224,
+      "average_energy_kwh": 19.13645733921162,
+      "average_carbon_kgco2": 10.525233661825727
+    },
+    {
+      "path_type": "balanced_low_congestion",
+      "trip_count": 77120,
+      "total_distance_km": 791549.27,
+      "total_energy_kwh": 1569783.09,
+      "total_carbon_kgco2": 863394.37,
+      "average_distance_km": 10.263865015560166,
+      "average_energy_kwh": 20.355071187759336,
+      "average_carbon_kgco2": 11.195466415975103
+    },
+    {
+      "path_type": "longer_but_flatter",
+      "trip_count": 77120,
+      "total_distance_km": 854872.87,
+      "total_energy_kwh": 1695040.34,
+      "total_carbon_kgco2": 932286.65,
+      "average_distance_km": 11.084969787344399,
+      "average_energy_kwh": 21.979257520746888,
+      "average_carbon_kgco2": 12.088779175311204
+    }
+  ],
+  "headline": {
+    "same_shortest_and_lowest_energy_path_count": 77107,
+    "same_shortest_and_lowest_energy_path_pct": 0.9998314315352697,
+    "distance_delta_km": 6.989999999990687,
+    "energy_delta_kwh": -1.1100000001024455,
+    "energy_reduction_pct": 7.521326060078532e-07,
+    "carbon_delta_kgco2": -0.6300000000046566,
+    "carbon_reduction_pct": 7.76143067171852e-07
+  }
+}

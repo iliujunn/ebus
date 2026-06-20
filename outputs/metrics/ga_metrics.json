@@ -16,7 +16,7 @@
   "min_final_soc": 0.24093575426764097,
   "max_final_soc": 0.8023,
   "fitness_score": 7420514967.983386,
-  "runtime_seconds": 3.6973062499891967,
+  "runtime_seconds": 3.6154135828837752,
   "input_paths": {
     "trips": "data/processed/trips_hk_gtfs_full.csv",
     "vehicles": "data/processed/vehicles.csv",

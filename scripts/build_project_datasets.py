@@ -14,7 +14,7 @@ import zipfile
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from collect_hk_gtfs import clean_stop_name, format_time, haversine_km, parse_time, read_csv
+from collect_hk_gtfs import clean_stop_name, parse_time, read_csv
 
 
 GTFS_URL = "https://static.data.gov.hk/td/pt-headway-sc/gtfs.zip"
@@ -27,6 +27,49 @@ PROCESSED_DIR = Path("data/processed")
 BASE_ENERGY_NOISE_RATIO = 0.08
 BASE_ENERGY_NOISE_KWH = 1.5
 OUTLIER_PROBABILITY = 0.03
+FULL_FLEET_COUNT = 5870
+
+PENETRATION_SCENARIOS = {
+    "current": {
+        "fleet_count": 150,
+        "trip_ratio": 150 / FULL_FLEET_COUNT,
+        "station_count": 6,
+        "fast_chargers": 4,
+        "slow_chargers": 4,
+        "trip_output": "trips_current.csv",
+        "vehicle_output": "vehicles_current_150.csv",
+        "station_output": "stations_current.csv",
+        "bus_prefix": "CURBUS",
+        "station_prefix": "CURCS",
+        "label": "Current pilot-stage e-bus penetration scenario",
+    },
+    "planned": {
+        "fleet_count": 750,
+        "trip_ratio": 750 / FULL_FLEET_COUNT,
+        "station_count": 20,
+        "fast_chargers": 8,
+        "slow_chargers": 6,
+        "trip_output": "trips_planned.csv",
+        "vehicle_output": "vehicles_planned_750.csv",
+        "station_output": "stations_planned.csv",
+        "bus_prefix": "PLANBUS",
+        "station_prefix": "PLANCS",
+        "label": "Planned near-term e-bus expansion scenario",
+    },
+    "full": {
+        "fleet_count": FULL_FLEET_COUNT,
+        "trip_ratio": 1.0,
+        "station_count": 80,
+        "fast_chargers": 12,
+        "slow_chargers": 8,
+        "trip_output": "trips_full_coverage.csv",
+        "vehicle_output": "vehicles_full_5870.csv",
+        "station_output": "stations_full_80hubs.csv",
+        "bus_prefix": "FULLBUS",
+        "station_prefix": "FULLCS",
+        "label": "Full e-bus coverage scenario",
+    },
+}
 
 
 def stable_random(*parts: str) -> random.Random:
@@ -148,6 +191,178 @@ def build_stations(gtfs_dir: Path, trips: list[dict[str, str]], output: Path, st
         ],
         rows,
     )
+
+
+def select_route_cluster_trips(trips: list[dict[str, str]], target_ratio: float) -> list[dict[str, str]]:
+    """Select high-frequency route clusters until the target trip share is reached."""
+
+    if target_ratio >= 1.0:
+        return list(trips)
+
+    target_count = max(1, math.ceil(len(trips) * target_ratio))
+    route_counts = Counter(row["route_id"] for row in trips)
+    selected_routes: set[str] = set()
+    selected_count = 0
+    for route_id, count in sorted(route_counts.items(), key=lambda item: (-item[1], item[0])):
+        if selected_routes and abs(target_count - selected_count) <= abs(target_count - (selected_count + count)):
+            break
+        selected_routes.add(route_id)
+        selected_count += count
+        if selected_count == target_count:
+            break
+    return [row for row in trips if row["route_id"] in selected_routes]
+
+
+def build_penetration_vehicles(
+    trips: list[dict[str, str]],
+    output: Path,
+    bus_count: int,
+    bus_prefix: str,
+    scenario_label: str,
+) -> None:
+    """Build a deterministic fleet assigned to the selected route cluster."""
+
+    route_counts = Counter(row["route_id"] for row in trips)
+    routes = [route for route, _ in sorted(route_counts.items(), key=lambda item: (-item[1], item[0]))]
+    vehicle_counts = apportion_vehicles_to_routes(route_counts, bus_count)
+    assigned_routes = [route for route in routes for _ in range(vehicle_counts[route])]
+
+    rows = []
+    for index, route in enumerate(assigned_routes):
+        rnd = stable_random("penetration-vehicle", scenario_label, str(index), route)
+        rows.append(
+            {
+                "bus_id": f"{bus_prefix}{index + 1:05d}",
+                "battery_capacity": 300,
+                "initial_soc": round(rnd.uniform(0.72, 0.88), 3),
+                "max_soc": 0.9,
+                "min_soc": 0.2,
+                "assigned_route": route,
+                "source": f"{scenario_label}; route assignment weighted by selected GTFS trip frequency",
+            }
+        )
+    write_csv(
+        output,
+        ["bus_id", "battery_capacity", "initial_soc", "max_soc", "min_soc", "assigned_route", "source"],
+        rows,
+    )
+
+
+def apportion_vehicles_to_routes(route_counts: Counter[str], bus_count: int) -> dict[str, int]:
+    """Allocate vehicles by trip frequency while covering every route when possible."""
+
+    routes = [route for route, _ in sorted(route_counts.items(), key=lambda item: (-item[1], item[0]))]
+    if bus_count < len(routes):
+        return {route: 1 for route in routes[:bus_count]}
+
+    allocation = {route: 1 for route in routes}
+    remaining = bus_count - len(routes)
+    if remaining == 0:
+        return allocation
+
+    total_trips = sum(route_counts.values())
+    quotas = {route: remaining * route_counts[route] / total_trips for route in routes}
+    for route, quota in quotas.items():
+        extra = math.floor(quota)
+        allocation[route] += extra
+        remaining -= extra
+
+    remainders = sorted(
+        ((quota - math.floor(quota), route) for route, quota in quotas.items()),
+        key=lambda item: (-item[0], item[1]),
+    )
+    for _, route in remainders[:remaining]:
+        allocation[route] += 1
+    return allocation
+
+
+def build_penetration_stations(
+    gtfs_dir: Path,
+    trips: list[dict[str, str]],
+    output: Path,
+    station_count: int,
+    station_prefix: str,
+    scenario_label: str,
+    fast_chargers: int,
+    slow_chargers: int,
+) -> None:
+    """Build charging hubs near the busiest termini in a selected route cluster."""
+
+    bus_route_ids = {row["route_id"] for row in trips}
+    stops = {row["stop_id"]: row for row in read_csv(gtfs_dir / "stops.txt")}
+    terminal_counts = terminal_stop_counts(gtfs_dir, bus_route_ids)
+    terminal_items = terminal_counts.most_common()
+    if not terminal_items:
+        raise ValueError("Cannot build penetration stations without terminal stop candidates.")
+
+    rows = []
+    for idx in range(station_count):
+        stop_id = terminal_items[idx % len(terminal_items)][0]
+        stop = stops[stop_id]
+        name = clean_stop_name(stop["stop_name"])
+        rows.append(
+            {
+                "station_id": f"{station_prefix}{idx + 1:03d}",
+                "station_name": f"{name} {scenario_label} Charging Hub",
+                "location": name,
+                "stop_id": stop_id,
+                "lat": stop.get("stop_lat", ""),
+                "lon": stop.get("stop_lon", ""),
+                "fast_chargers": fast_chargers,
+                "slow_chargers": slow_chargers,
+                "fast_power": 120,
+                "slow_power": 40,
+                "source": f"{scenario_label}; hubs selected from high-frequency GTFS termini",
+            }
+        )
+    write_csv(
+        output,
+        [
+            "station_id",
+            "station_name",
+            "location",
+            "stop_id",
+            "lat",
+            "lon",
+            "fast_chargers",
+            "slow_chargers",
+            "fast_power",
+            "slow_power",
+            "source",
+        ],
+        rows,
+    )
+
+
+def build_penetration_scenarios(gtfs_dir: Path, trips: list[dict[str, str]]) -> None:
+    """Build nested current/planned/full e-bus penetration scenario inputs."""
+
+    trip_fields = list(trips[0].keys()) if trips else []
+    for scenario_name, config in PENETRATION_SCENARIOS.items():
+        scenario_trips = select_route_cluster_trips(trips, float(config["trip_ratio"]))
+        scenario_label = str(config["label"])
+        write_csv(PROCESSED_DIR / str(config["trip_output"]), trip_fields, scenario_trips)
+        build_penetration_vehicles(
+            scenario_trips,
+            PROCESSED_DIR / str(config["vehicle_output"]),
+            int(config["fleet_count"]),
+            str(config["bus_prefix"]),
+            scenario_label,
+        )
+        build_penetration_stations(
+            gtfs_dir,
+            scenario_trips,
+            PROCESSED_DIR / str(config["station_output"]),
+            int(config["station_count"]),
+            str(config["station_prefix"]),
+            scenario_label,
+            int(config["fast_chargers"]),
+            int(config["slow_chargers"]),
+        )
+        print(
+            f"Built {scenario_name}: {len(scenario_trips)} trips, "
+            f"{config['fleet_count']} vehicles, {config['station_count']} hubs"
+        )
 
 
 def build_prices(output: Path) -> None:
@@ -402,6 +617,7 @@ def build_all() -> None:
     hourly_temp = build_weather(PROCESSED_DIR / "weather_hourly.csv")
     build_vehicles(trips, PROCESSED_DIR / "vehicles.csv")
     build_stations(gtfs_dir, trips, PROCESSED_DIR / "stations.csv")
+    build_penetration_scenarios(gtfs_dir, trips)
     build_prices(PROCESSED_DIR / "prices.csv")
     build_energy_samples(trips, hourly_temp, PROCESSED_DIR / "energy_samples.csv")
     build_path_candidates(trips, hourly_temp, PROCESSED_DIR / "path_candidates.csv")

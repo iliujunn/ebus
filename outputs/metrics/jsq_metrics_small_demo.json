@@ -1,0 +1,35 @@
+{
+  "algorithm": "JSQ",
+  "scenario_name": "small_demo",
+  "description": "Join the Shortest Queue baseline with FCFS charger queues",
+  "scenario_description": "20-bus small demo on the sampled GTFS routes",
+  "trip_count": 82,
+  "completed_trip_count": 82,
+  "unserved_trip_count": 0,
+  "completion_rate": 1.0,
+  "vehicle_count": 20,
+  "charging_event_count": 0,
+  "total_predicted_energy_kwh": 1739.3977579797404,
+  "total_charged_energy_kwh": 0.0,
+  "total_charging_cost": 0.0,
+  "average_wait_time_min": 0.0,
+  "max_wait_time_min": 0.0,
+  "average_charge_duration_min": 0.0,
+  "min_final_soc": 0.380392995263498,
+  "max_final_soc": 0.6227478289847325,
+  "runtime_seconds": 0.1182969578076154,
+  "input_paths": {
+    "trips": "data/processed/trips_hk_gtfs.csv",
+    "vehicles": "data/processed/vehicles.csv",
+    "stations": "data/processed/stations.csv",
+    "prices": "data/processed/prices.csv",
+    "energy_predictions": "data/processed/energy_predictions.csv"
+  },
+  "schedule_output_path": "outputs/schedules/jsq_schedule_small_demo.csv",
+  "metrics_output_path": "outputs/metrics/jsq_metrics_small_demo.json",
+  "config": {
+    "charge_trigger_soc": 0.3,
+    "target_soc": 0.9,
+    "charger_travel_time_min": 0.0
+  }
+}

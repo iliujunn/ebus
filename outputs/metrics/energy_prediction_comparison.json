@@ -1,0 +1,24 @@
+{
+  "input_path": "data/processed/energy_predictions.csv",
+  "sample_count": 77120,
+  "fixed_kwh_per_km": 1.98317798966576,
+  "models": {
+    "Fixed kWh/km": {
+      "mae": 5.390424683132113,
+      "rmse": 8.412646517751002,
+      "r2": 0.8110712907953698
+    },
+    "Neural network": {
+      "mae": 2.854494932283143,
+      "rmse": 4.763314828637386,
+      "r2": 0.9394308820840278
+    }
+  },
+  "headline": {
+    "mae_delta_kwh": -2.53592975084897,
+    "mae_reduction_pct": 0.4704508271462324,
+    "rmse_delta_kwh": -3.649331689113616,
+    "rmse_reduction_pct": 0.4337911597038326,
+    "r2_delta": 0.12835959128865804
+  }
+}

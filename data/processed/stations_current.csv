@@ -1,0 +1,7 @@
+station_id,station_name,location,stop_id,lat,lon,fast_chargers,slow_chargers,fast_power,slow_power,source
+CURCS001,[CTB] 屯门码头 Current pilot-stage e-bus penetration scenario Charging Hub,[CTB] 屯门码头,1242,22.37254,113.96673,4,4,120,40,Current pilot-stage e-bus penetration scenario; hubs selected from high-frequency GTFS termini
+CURCS002,[LRTFeeder] 兆麟 Current pilot-stage e-bus penetration scenario Charging Hub,[LRTFeeder] 兆麟,12956,22.38546,113.97688,4,4,120,40,Current pilot-stage e-bus penetration scenario; hubs selected from high-frequency GTFS termini
+CURCS003,[KMB] 天恒邨总站 Current pilot-stage e-bus penetration scenario Charging Hub,[KMB] 天恒邨总站,9888,22.46910,113.99924,4,4,120,40,Current pilot-stage e-bus penetration scenario; hubs selected from high-frequency GTFS termini
+CURCS004,[CTB] 天水围站 - 屏欣苑 Current pilot-stage e-bus penetration scenario Charging Hub,[CTB] 天水围站 - 屏欣苑,9908,22.44640,114.00360,4,4,120,40,Current pilot-stage e-bus penetration scenario; hubs selected from high-frequency GTFS termini
+CURCS005,[CTB] 屯门码头 Current pilot-stage e-bus penetration scenario Charging Hub,[CTB] 屯门码头,1242,22.37254,113.96673,4,4,120,40,Current pilot-stage e-bus penetration scenario; hubs selected from high-frequency GTFS termini
+CURCS006,[LRTFeeder] 兆麟 Current pilot-stage e-bus penetration scenario Charging Hub,[LRTFeeder] 兆麟,12956,22.38546,113.97688,4,4,120,40,Current pilot-stage e-bus penetration scenario; hubs selected from high-frequency GTFS termini

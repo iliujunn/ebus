@@ -1,0 +1,293 @@
+{
+  "generated_at": "2026-06-19T06:16:32.328094+00:00",
+  "inputs": {
+    "jsq_metrics": "outputs/metrics/jsq_metrics_planned.json",
+    "ga_metrics": "outputs/metrics/ga_metrics_planned.json",
+    "jsq_schedule": "outputs/schedules/jsq_schedule_planned.csv",
+    "ga_schedule": "outputs/schedules/ga_schedule_planned.csv"
+  },
+  "scenario": {
+    "jsq": "planned",
+    "ga": "planned",
+    "same_trip_input": true,
+    "same_vehicle_input": true,
+    "same_station_input": true,
+    "same_trip_count": true,
+    "same_vehicle_count": true,
+    "directly_comparable": true
+  },
+  "algorithms": {
+    "JSQ": {
+      "trip_count": 9717,
+      "completed_trip_count": 9717,
+      "unserved_trip_count": 0,
+      "completion_rate": 1.0,
+      "vehicle_count": 750,
+      "charging_event_count": 520,
+      "total_predicted_energy_kwh": 149584.24161174626,
+      "total_charged_energy_kwh": 100314.80337406007,
+      "grid_emission_factor_kgco2_per_kwh": 0.55,
+      "total_charging_co2_kg": 55173.14185573304,
+      "total_charging_cost": 119652.3695373308,
+      "average_wait_time_min": 0.0,
+      "max_wait_time_min": 0.0,
+      "average_charge_duration_min": 96.456541705827,
+      "min_final_soc": 0.3003205834907698,
+      "max_final_soc": 0.9,
+      "runtime_seconds": 0.9718458750285208
+    },
+    "GA": {
+      "trip_count": 9717,
+      "completed_trip_count": 9717,
+      "unserved_trip_count": 0,
+      "completion_rate": 1.0,
+      "vehicle_count": 750,
+      "charging_event_count": 465,
+      "total_predicted_energy_kwh": 149584.24161174736,
+      "total_charged_energy_kwh": 50506.756617770545,
+      "grid_emission_factor_kgco2_per_kwh": 0.55,
+      "total_charging_co2_kg": 27778.716139773802,
+      "total_charging_cost": 59937.060120202295,
+      "average_wait_time_min": 0.0,
+      "max_wait_time_min": 0.0,
+      "average_charge_duration_min": 54.30834044921564,
+      "min_final_soc": 0.22010972097233533,
+      "max_final_soc": 0.6196,
+      "runtime_seconds": 18.43291704216972,
+      "fitness_score": 59937.060120202295
+    }
+  },
+  "schedule_recalculation": {
+    "JSQ": {
+      "path": "outputs/schedules/jsq_schedule_planned.csv",
+      "trip_count": 9717,
+      "completed_trip_count": 9717,
+      "unserved_trip_count": 0,
+      "completion_rate": 1.0,
+      "vehicle_count": 750,
+      "charging_event_count": 520,
+      "total_predicted_energy_kwh": 149584.24161174736,
+      "total_charged_energy_kwh": 100314.80337406001,
+      "grid_emission_factor_kgco2_per_kwh": 0.55,
+      "total_charging_co2_kg": 55173.14185573301,
+      "total_charging_cost": 119652.36953733076,
+      "average_wait_time_min": 0.0,
+      "max_wait_time_min": 0.0,
+      "average_charge_duration_min": 96.45654170582694
+    },
+    "GA": {
+      "path": "outputs/schedules/ga_schedule_planned.csv",
+      "trip_count": 9717,
+      "completed_trip_count": 9717,
+      "unserved_trip_count": 0,
+      "completion_rate": 1.0,
+      "vehicle_count": 750,
+      "charging_event_count": 465,
+      "total_predicted_energy_kwh": 149584.24161174736,
+      "total_charged_energy_kwh": 50506.756617770545,
+      "grid_emission_factor_kgco2_per_kwh": 0.55,
+      "total_charging_co2_kg": 27778.716139773802,
+      "total_charging_cost": 59937.060120202295,
+      "average_wait_time_min": 0.0,
+      "max_wait_time_min": 0.0,
+      "average_charge_duration_min": 54.30834044921564
+    }
+  },
+  "schedule_validation": {
+    "JSQ": {
+      "trip_count": {
+        "metrics": 9717,
+        "schedule": 9717,
+        "matches": true
+      },
+      "completed_trip_count": {
+        "metrics": 9717,
+        "schedule": 9717,
+        "matches": true
+      },
+      "unserved_trip_count": {
+        "metrics": 0,
+        "schedule": 0,
+        "matches": true
+      },
+      "charging_event_count": {
+        "metrics": 520,
+        "schedule": 520,
+        "matches": true
+      },
+      "total_charged_energy_kwh": {
+        "metrics": 100314.80337406007,
+        "schedule": 100314.80337406001,
+        "matches": true
+      },
+      "total_charging_co2_kg": {
+        "metrics": 55173.14185573304,
+        "schedule": 55173.14185573301,
+        "matches": true
+      },
+      "total_charging_cost": {
+        "metrics": 119652.3695373308,
+        "schedule": 119652.36953733076,
+        "matches": true
+      }
+    },
+    "GA": {
+      "trip_count": {
+        "metrics": 9717,
+        "schedule": 9717,
+        "matches": true
+      },
+      "completed_trip_count": {
+        "metrics": 9717,
+        "schedule": 9717,
+        "matches": true
+      },
+      "unserved_trip_count": {
+        "metrics": 0,
+        "schedule": 0,
+        "matches": true
+      },
+      "charging_event_count": {
+        "metrics": 465,
+        "schedule": 465,
+        "matches": true
+      },
+      "total_charged_energy_kwh": {
+        "metrics": 50506.756617770545,
+        "schedule": 50506.756617770545,
+        "matches": true
+      },
+      "total_charging_co2_kg": {
+        "metrics": 27778.716139773802,
+        "schedule": 27778.716139773802,
+        "matches": true
+      },
+      "total_charging_cost": {
+        "metrics": 59937.060120202295,
+        "schedule": 59937.060120202295,
+        "matches": true
+      }
+    }
+  },
+  "comparison": {
+    "ga_minus_jsq": {
+      "trip_count": {
+        "jsq": 9717.0,
+        "ga": 9717.0,
+        "delta": 0.0,
+        "delta_pct_vs_jsq": 0.0
+      },
+      "completed_trip_count": {
+        "jsq": 9717.0,
+        "ga": 9717.0,
+        "delta": 0.0,
+        "delta_pct_vs_jsq": 0.0
+      },
+      "unserved_trip_count": {
+        "jsq": 0.0,
+        "ga": 0.0,
+        "delta": 0.0,
+        "delta_pct_vs_jsq": 0.0
+      },
+      "completion_rate": {
+        "jsq": 1.0,
+        "ga": 1.0,
+        "delta": 0.0,
+        "delta_pct_vs_jsq": 0.0
+      },
+      "vehicle_count": {
+        "jsq": 750.0,
+        "ga": 750.0,
+        "delta": 0.0,
+        "delta_pct_vs_jsq": 0.0
+      },
+      "charging_event_count": {
+        "jsq": 520.0,
+        "ga": 465.0,
+        "delta": -55.0,
+        "delta_pct_vs_jsq": -0.10576923076923077
+      },
+      "total_predicted_energy_kwh": {
+        "jsq": 149584.24161174626,
+        "ga": 149584.24161174736,
+        "delta": 1.1059455573558807e-09,
+        "delta_pct_vs_jsq": 7.39346301080578e-15
+      },
+      "total_charged_energy_kwh": {
+        "jsq": 100314.80337406007,
+        "ga": 50506.756617770545,
+        "delta": -49808.04675628952,
+        "delta_pct_vs_jsq": -0.4965174139908562
+      },
+      "grid_emission_factor_kgco2_per_kwh": {
+        "jsq": 0.55,
+        "ga": 0.55,
+        "delta": 0.0,
+        "delta_pct_vs_jsq": 0.0
+      },
+      "total_charging_co2_kg": {
+        "jsq": 55173.14185573304,
+        "ga": 27778.716139773802,
+        "delta": -27394.425715959238,
+        "delta_pct_vs_jsq": -0.4965174139908562
+      },
+      "total_charging_cost": {
+        "jsq": 119652.3695373308,
+        "ga": 59937.060120202295,
+        "delta": -59715.309417128505,
+        "delta_pct_vs_jsq": -0.49907335431830036
+      },
+      "average_wait_time_min": {
+        "jsq": 0.0,
+        "ga": 0.0,
+        "delta": 0.0,
+        "delta_pct_vs_jsq": 0.0
+      },
+      "max_wait_time_min": {
+        "jsq": 0.0,
+        "ga": 0.0,
+        "delta": 0.0,
+        "delta_pct_vs_jsq": 0.0
+      },
+      "average_charge_duration_min": {
+        "jsq": 96.456541705827,
+        "ga": 54.30834044921564,
+        "delta": -42.14820125661135,
+        "delta_pct_vs_jsq": -0.4369657102693446
+      },
+      "min_final_soc": {
+        "jsq": 0.3003205834907698,
+        "ga": 0.22010972097233533,
+        "delta": -0.08021086251843446,
+        "delta_pct_vs_jsq": -0.26708413251634383
+      },
+      "max_final_soc": {
+        "jsq": 0.9,
+        "ga": 0.6196,
+        "delta": -0.2804,
+        "delta_pct_vs_jsq": -0.31155555555555553
+      },
+      "runtime_seconds": {
+        "jsq": 0.9718458750285208,
+        "ga": 18.43291704216972,
+        "delta": 17.4610711671412,
+        "delta_pct_vs_jsq": 17.966913906619986
+      }
+    },
+    "headline": {
+      "completed_trip_delta": 0,
+      "unserved_trip_delta": 0,
+      "completion_rate_delta": 0.0,
+      "charging_cost_delta": -59715.309417128505,
+      "charging_cost_delta_pct": -0.49907335431830036,
+      "charging_co2_delta_kg": -27394.425715959238,
+      "charging_co2_delta_pct": -0.4965174139908562,
+      "average_wait_time_delta_min": 0.0,
+      "charging_event_delta": -55,
+      "ga_completed_more_trips": false,
+      "ga_cost_lower": true,
+      "ga_average_wait_lower": false,
+      "directly_comparable": true
+    }
+  }
+}
