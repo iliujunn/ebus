@@ -11,13 +11,15 @@
   "charging_event_count": 520,
   "total_predicted_energy_kwh": 149584.24161174626,
   "total_charged_energy_kwh": 100314.80337406007,
+  "grid_emission_factor_kgco2_per_kwh": 0.55,
+  "total_charging_co2_kg": 55173.14185573304,
   "total_charging_cost": 119652.3695373308,
   "average_wait_time_min": 0.0,
   "max_wait_time_min": 0.0,
   "average_charge_duration_min": 96.456541705827,
   "min_final_soc": 0.3003205834907698,
   "max_final_soc": 0.9,
-  "runtime_seconds": 0.9718458750285208,
+  "runtime_seconds": 0.7972287088632584,
   "input_paths": {
     "trips": "data/processed/trips_planned.csv",
     "vehicles": "data/processed/vehicles_planned_750.csv",
@@ -31,7 +33,5 @@
     "charge_trigger_soc": 0.3,
     "target_soc": 0.9,
     "charger_travel_time_min": 0.0
-  },
-  "grid_emission_factor_kgco2_per_kwh": 0.55,
-  "total_charging_co2_kg": 55173.14185573304
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T06:16:32.328094+00:00",
+  "generated_at": "2026-06-22T05:46:09.561080+00:00",
   "inputs": {
     "jsq_metrics": "outputs/metrics/jsq_metrics_planned.json",
     "ga_metrics": "outputs/metrics/ga_metrics_planned.json",
@@ -34,7 +34,7 @@
       "average_charge_duration_min": 96.456541705827,
       "min_final_soc": 0.3003205834907698,
       "max_final_soc": 0.9,
-      "runtime_seconds": 0.9718458750285208
+      "runtime_seconds": 0.7972287088632584
     },
     "GA": {
       "trip_count": 9717,
@@ -53,7 +53,7 @@
       "average_charge_duration_min": 54.30834044921564,
       "min_final_soc": 0.22010972097233533,
       "max_final_soc": 0.6196,
-      "runtime_seconds": 18.43291704216972,
+      "runtime_seconds": 14.55818404094316,
       "fitness_score": 59937.060120202295
     }
   },
@@ -268,10 +268,10 @@
         "delta_pct_vs_jsq": -0.31155555555555553
       },
       "runtime_seconds": {
-        "jsq": 0.9718458750285208,
-        "ga": 18.43291704216972,
-        "delta": 17.4610711671412,
-        "delta_pct_vs_jsq": 17.966913906619986
+        "jsq": 0.7972287088632584,
+        "ga": 14.55818404094316,
+        "delta": 13.760955332079902,
+        "delta_pct_vs_jsq": 17.26098819459373
       }
     },
     "headline": {

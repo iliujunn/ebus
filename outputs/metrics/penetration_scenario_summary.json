@@ -13,7 +13,7 @@
       "total_charged_energy_kwh": 0.0,
       "total_charging_co2_kg": 0.0,
       "min_final_soc": 0.3241627174697312,
-      "runtime_seconds": 0.1753067090176046
+      "runtime_seconds": 0.15572495805099607
     },
     {
       "scenario": "current",
@@ -28,7 +28,7 @@
       "total_charged_energy_kwh": 0.0,
       "total_charging_co2_kg": 0.0,
       "min_final_soc": 0.3241627174697312,
-      "runtime_seconds": 3.3815162079408765
+      "runtime_seconds": 1.7392893340438604
     },
     {
       "scenario": "planned",
@@ -43,7 +43,7 @@
       "total_charged_energy_kwh": 100314.80337406007,
       "total_charging_co2_kg": 55173.14185573304,
       "min_final_soc": 0.3003205834907698,
-      "runtime_seconds": 0.9718458750285208
+      "runtime_seconds": 0.7738989579956979
     },
     {
       "scenario": "planned",
@@ -58,7 +58,7 @@
       "total_charged_energy_kwh": 50506.756617770545,
       "total_charging_co2_kg": 27778.716139773802,
       "min_final_soc": 0.22010972097233533,
-      "runtime_seconds": 18.43291704216972
+      "runtime_seconds": 13.912429874995723
     },
     {
       "scenario": "full",
@@ -73,7 +73,7 @@
       "total_charged_energy_kwh": 1376602.5169223857,
       "total_charging_co2_kg": 757131.3843073122,
       "min_final_soc": 0.3000109983789996,
-      "runtime_seconds": 46.08185745915398
+      "runtime_seconds": 34.58958070795052
     },
     {
       "scenario": "full",

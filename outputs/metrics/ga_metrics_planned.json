@@ -11,6 +11,8 @@
   "charging_event_count": 465,
   "total_predicted_energy_kwh": 149584.24161174736,
   "total_charged_energy_kwh": 50506.756617770545,
+  "grid_emission_factor_kgco2_per_kwh": 0.55,
+  "total_charging_co2_kg": 27778.716139773802,
   "total_charging_cost": 59937.060120202295,
   "average_wait_time_min": 0.0,
   "max_wait_time_min": 0.0,
@@ -18,7 +20,7 @@
   "min_final_soc": 0.22010972097233533,
   "max_final_soc": 0.6196,
   "fitness_score": 59937.060120202295,
-  "runtime_seconds": 18.43291704216972,
+  "runtime_seconds": 14.55818404094316,
   "input_paths": {
     "trips": "data/processed/trips_planned.csv",
     "vehicles": "data/processed/vehicles_planned_750.csv",
@@ -158,6 +160,9 @@
     "unserved_trip_count": 0,
     "completion_rate": 1.0,
     "charging_event_count": 520,
+    "total_charged_energy_kwh": 100314.80337406007,
+    "grid_emission_factor_kgco2_per_kwh": 0.55,
+    "total_charging_co2_kg": 55173.14185573304,
     "total_charging_cost": 119652.3695373308,
     "average_wait_time_min": 0.0,
     "max_wait_time_min": 0.0,
@@ -165,11 +170,6 @@
     "unserved_trip_delta": 0,
     "charging_cost_delta": -59715.309417128505,
     "charging_cost_delta_pct": -0.49907335431830036,
-    "grid_emission_factor_kgco2_per_kwh": 0.55,
-    "total_charging_co2_kg": 55173.14185573304,
-    "charging_co2_delta_kg": -27394.425715959238,
-    "charging_co2_delta_pct": -0.4965174139908562
-  },
-  "grid_emission_factor_kgco2_per_kwh": 0.55,
-  "total_charging_co2_kg": 27778.716139773802
+    "charging_co2_delta_kg": -27394.425715959238
+  }
 }
